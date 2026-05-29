@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型秋招教程(ARIS-in-AI-Offer & Hello-Agents)</title>
+<meta name="description" content="大模型秋招教程首页，源于 ARIS-in-AI-Offer 和 Hello-Agents 两个开源仓库中的开源文档，整理为可跳转的教程卡片索引。">
+
+<style>
+:root {
+  --bg: #fdfcf7;
+  --bg-soft: #f4f1ea;
+  --bg-card: #ffffff;
+  --ink: #1a1a1a;
+  --ink-soft: #4a4a4a;
+  --ink-muted: #6b6b6b;
+  --primary: #1a4a8c;
+  --primary-soft: #2d6cb8;
+  --accent: #b8390e;
+  --good: #065f46;
+  --good-bg: #d1fae5;
+  --warn: #92400e;
+  --warn-bg: #fef3c7;
+  --border: #d6d0c0;
+  --border-soft: #e8e3d5;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(26, 74, 140, 0.07), transparent 26%),
+    radial-gradient(circle at top right, rgba(184, 57, 14, 0.06), transparent 24%),
+    var(--bg);
+  font-family: "Source Serif Pro", "Source Serif 4", "Crimson Pro", "Georgia", "Songti SC", "STSong", serif;
+  line-height: 1.65;
+  font-size: 16px;
+}
+
+main a { color: var(--primary); }
+main a:hover { color: var(--accent); }
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 24px 72px;
+}
+
+.hero {
+  border-bottom: 3px double var(--primary);
+  padding-bottom: 28px;
+  margin-bottom: 40px;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin: 0 0 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  font-style: italic;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.jump-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.jump-links a {
+  text-decoration: none;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--primary);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.jump-links a:hover {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  box-shadow: 0 2px 10px rgba(26, 74, 140, 0.08);
+}
+
+section { margin: 40px 0; }
+
+section h2 {
+  font-size: 22px;
+  margin: 0 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+}
+
+section h2 .num {
+  color: var(--primary);
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.volumes,
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.volume-card,
+.source-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 18px 20px;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.volume-card {
+  border-left: 4px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.volume-card:hover,
+.source-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26, 74, 140, 0.08);
+}
+
+.volume-card.highlight {
+  border-left-color: var(--accent);
+}
+
+.vol-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vol-id {
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vol-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.vol-status {
+  display: inline-block;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid #86efac;
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.vol-status.s-warn {
+  border-color: #fcd34d;
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.vol-scope {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.card-links {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.mini-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 9px 11px;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.mini-link:hover {
+  border-color: var(--primary);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.mini-link strong {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.mini-link small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.resource-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.resource-link {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.resource-link:hover {
+  border-color: var(--primary);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.resource-link strong {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.resource-link small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.resource-arrow {
+  color: var(--ink-muted);
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.source-card {
+  text-decoration: none;
+  color: inherit;
+  border-left: 4px solid var(--primary);
+}
+
+.source-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.source-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.source-card .source-meta {
+  margin-top: 10px;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.foot {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+
+.foot a {
+  color: var(--ink-muted);
+  border-bottom: 1px dotted var(--border);
+  text-decoration: none;
+}
+
+.foot a:hover {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+@media (max-width: 720px) {
+  .container { padding: 32px 16px 60px; }
+  h1 { font-size: 28px; }
+  section h2 { font-size: 19px; }
+  .vol-title { font-size: 18px; }
+  .resource-link { flex-direction: column; }
+  .volumes,
+  .source-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1100px) and (min-width: 721px) {
+  .volumes,
+  .source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <div class="eyebrow">Tutorial Index · 24 Tutorials · Open Source Learning Notes</div>
+  <h1>大模型秋招教程(ARIS-in-AI-Offer & Hello-Agents) 首页</h1>
+  <p class="subtitle">本网站所有文档均源于 ARIS-in-AI-Offer 与 Hello-Agents 两个开源仓库中的开源文档</p>
+  <p class="tagline">感谢这两个开源仓库对社区和本网页做出的贡献，也预祝大家秋招顺利！下面按主题整理为教程卡片，点击即可跳转到对应 HTML。</p>
+  <div class="stats">
+    <span>24 篇中文教程</span>
+    <span>8 个主题卡片</span>
+    <span>2 个来源仓库</span>
+  </div>
+  <nav class="jump-links" aria-label="快速跳转">
+    <a href="#general">General / 基础</a>
+    <a href="#post-training">Post-Training</a>
+    <a href="#systems">LLM Systems</a>
+    <a href="#theory">Theory &amp; Tokenizers</a>
+    <a href="#generation">Generation Systems</a>
+    <a href="#multimodal">Multimodal</a>
+    <a href="#agents">Agents</a>
+    <a href="#supplement">大模型秋招面试问题总结</a>
+    <a href="#sources">文档出处</a>
+  </nav>
+</header>
+
+<section>
+  <h2><span class="num">§1</span>教程卡片</h2>
+  <div class="volumes">
+
+    <article class="volume-card" id="general">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 01</span>
+        <span class="vol-title">🧠 General / 基础</span>
+        <span class="vol-status">2 篇</span>
+      </div>
+      <p class="vol-scope">梳理 Transformer 与 RLHF 的基础概念，是进入后续大模型面试题的起点。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/attention_tutorial.html"><strong>Attention 面试 Cheat Sheet</strong><small>注意力机制、QKV、位置编码与基础推导。</small></a>
+        <a class="mini-link" href="tutorials/kl_divergence_rlhf_tutorial.html"><strong>KL Divergence in RLHF</strong><small>从 KL 散度出发解释对齐约束与训练稳定性。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card" id="post-training">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 02</span>
+        <span class="vol-title">🎯 Post-Training &amp; Reasoning</span>
+        <span class="vol-status">3 篇</span>
+      </div>
+      <p class="vol-scope">覆盖对齐优化、推理模型与 on-policy distillation，是面试中最常追问的训练后阶段。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/rlhf_dpo_grpo_ppo_tutorial.html"><strong>RLHF / DPO / GRPO / PPO</strong><small>对齐方法、偏好优化与策略更新机制。</small></a>
+        <a class="mini-link" href="tutorials/reasoning_models_tutorial.html"><strong>Reasoning Models</strong><small>推理型大模型的训练范式与能力边界。</small></a>
+        <a class="mini-link" href="tutorials/llm_opd_tutorial.html"><strong>LLM On-Policy Distillation</strong><small>在线蒸馏、数据收集与策略对齐。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card" id="systems">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 03</span>
+        <span class="vol-title">🏛️ LLM Architecture &amp; Systems</span>
+        <span class="vol-status">5 篇</span>
+      </div>
+      <p class="vol-scope">面向系统岗的核心版块，涵盖模型结构、长上下文、缓存、量化与分布式训练。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/moe_tutorial.html"><strong>MoE</strong><small>路由、专家并行与参数/计算权衡。</small></a>
+        <a class="mini-link" href="tutorials/long_context_rope_yarn_mla_tutorial.html"><strong>Long Context: RoPE / YaRN / MLA</strong><small>长上下文位置编码与外推策略。</small></a>
+        <a class="mini-link" href="tutorials/kv_cache_speculative_decoding_tutorial.html"><strong>KV Cache + Speculative Decoding</strong><small>推理加速、缓存设计与采样协同。</small></a>
+        <a class="mini-link" href="tutorials/quantization_tutorial.html"><strong>Quantization</strong><small>GPTQ、AWQ、FP8 与低精度推理。</small></a>
+        <a class="mini-link" href="tutorials/distributed_training_tutorial.html"><strong>Distributed Training</strong><small>FSDP、ZeRO、并行策略与训练伸缩。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card" id="agents">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 04</span>
+        <span class="vol-title">🤖 Agents</span>
+        <span class="vol-status">4 篇</span>
+      </div>
+      <p class="vol-scope">从 Agent 基础到长程协作与自进化，覆盖多智能体系统常见追问。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/agent_foundations_tutorial.html"><strong>Agent Foundations</strong><small>ReAct、MCP、工具调用与基础框架。</small></a>
+        <a class="mini-link" href="tutorials/agentic_rl_tutorial.html"><strong>Agentic RL</strong><small>Agent 方向的强化学习与训练方法。</small></a>
+        <a class="mini-link" href="tutorials/multi_agent_long_horizon_tutorial.html"><strong>Multi-Agent &amp; Long-Horizon</strong><small>多智能体协同、记忆与长期任务。</small></a>
+        <a class="mini-link" href="tutorials/self_evolving_agents_tutorial.html"><strong>Self-Evolving Agents</strong><small>自我改进、反思和技能演化。</small></a>
+      </div>
+    </article>
+
+
+    <article class="volume-card" id="generation">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 05</span>
+        <span class="vol-title">🎨 Generation Systems</span>
+        <span class="vol-status">5 篇</span>
+      </div>
+      <p class="vol-scope">覆盖图像、视频、3D 以及扩散后训练与蒸馏，偏系统实现与工程落地。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/image_generation_systems_tutorial.html"><strong>Image Generation Systems</strong><small>图像生成系统的组成、训练与控制。</small></a>
+        <a class="mini-link" href="tutorials/video_generation_tutorial.html"><strong>Video Generation</strong><small>视频生成中的时序建模与采样策略。</small></a>
+        <a class="mini-link" href="tutorials/3d_generation_tutorial.html"><strong>3D Generation</strong><small>NeRF、3DGS 与 3D 生成的关键模块。</small></a>
+        <a class="mini-link" href="tutorials/diffusion_post_training_tutorial.html"><strong>Diffusion Post-Training</strong><small>扩散模型的对齐与偏好优化。</small></a>
+        <a class="mini-link" href="tutorials/diffusion_distillation_tutorial.html"><strong>Diffusion Distillation</strong><small>一致性模型、蒸馏与加速推理。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card" id="multimodal">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 06</span>
+        <span class="vol-title">👁️ Multimodal</span>
+        <span class="vol-status">1 篇</span>
+      </div>
+      <p class="vol-scope">多模态对齐的核心入口，适合快速回顾视觉语言融合和跨模态表示。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/vlm_multimodal_tutorial.html"><strong>VLM Multimodal</strong><small>CLIP、LLaVA、Qwen-VL 与多模态推理。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card" id="theory">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 07</span>
+        <span class="vol-title">🌊 Generative Models — Theory &amp; Tokenizers</span>
+        <span class="vol-status">3 篇</span>
+      </div>
+      <p class="vol-scope">聚焦生成式建模的基础理论和离散/连续表示学习。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/flow_matching_tutorial.html"><strong>Flow Matching</strong><small>从流匹配视角理解生成路径。</small></a>
+        <a class="mini-link" href="tutorials/diffusion_foundations_tutorial.html"><strong>Diffusion Foundations</strong><small>扩散模型的核心原理与训练目标。</small></a>
+        <a class="mini-link" href="tutorials/vae_vqvae_vqgan_tutorial.html"><strong>VAE / VQ-VAE / VQ-GAN</strong><small>连续与离散潜空间的表示学习。</small></a>
+      </div>
+    </article>
+
+    <article class="volume-card highlight" id="supplement">
+      <div class="vol-line">
+        <span class="vol-id">CARD · 08</span>
+        <span class="vol-title">📚 大模型秋招面试问题总结</span>
+        <span class="vol-status s-warn">1 篇</span>
+      </div>
+      <p class="vol-scope">来自 Hello-Agents 的大模型秋招面试问题总结，适合把 LLM、VLM 与 Agent 交叉题做最后一轮回顾。</p>
+      <div class="card-links">
+        <a class="mini-link" href="tutorials/extra_doc/LLM%20%26%20VLM%20%26%20Agent%20面试问题总结.html"><strong>LLM &amp; VLM &amp; Agent 面试问题总结</strong><small>open-source interview notes and reference answers.</small></a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="sources">
+  <h2><span class="num">§2</span>文档出处</h2>
+  <div class="source-grid">
+    <a class="source-card" href="https://github.com/wanshuiyin/ARIS-in-AI-Offer" target="_blank" rel="noopener noreferrer">
+      <div class="source-name">wanshuiyin/ARIS-in-AI-Offer</div>
+      <p>Bilingual ML / LLM / multimodal / diffusion / agent / generative-model interview cheat sheets (秋招经验手册) — single-file HTML reads anywhere on phone, iPad, and laptop — auto-generated by the ARIS /render-html workflow 🌱</p>
+      <div class="source-meta">GitHub source · tutorial set</div>
+    </a>
+    <a class="source-card" href="https://github.com/datawhalechina/hello-agents" target="_blank" rel="noopener noreferrer">
+      <div class="source-name">datawhalechina/hello-agents</div>
+      <p>📚 《从零开始构建智能体》——从零开始的智能体原理与实践教程</p>
+      <div class="source-meta">GitHub source · supplemental reference</div>
+    </a>
+  </div>
+</section>
+
+<footer class="foot">
+  感谢 <a href="https://github.com/wanshuiyin/ARIS-in-AI-Offer" target="_blank" rel="noopener noreferrer">ARIS-in-AI-Offer</a> 和 <a href="https://github.com/datawhalechina/hello-agents" target="_blank" rel="noopener noreferrer">Hello-Agents</a> 两个开源仓库对社区和本网页的贡献，欢迎大家给这两个项目点一个 Star 支持。
+</footer>
+
+</div>
+</body>
+</html>

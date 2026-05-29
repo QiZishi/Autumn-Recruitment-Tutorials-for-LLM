@@ -1,0 +1,54 @@
+# Tutorial Code · runnable PyTorch references
+
+最小可跑 PyTorch 教学脚本，配合 `docs/tutorials/*.md` 的概念讲解阅读。
+全部为纯 PyTorch 实现，无外部依赖（除 `torch` 和可选的 `matplotlib`），
+默认 CPU 几秒到几十秒可跑完。
+
+## 文件清单
+
+| 脚本 | 主题 | 对应 tutorial | 耗时 (CPU) |
+|---|---|---|---|
+| `mha.py` | Multi-Head Self-Attention + causal mask + 与 `nn.MultiheadAttention` 对齐验证 | [attention_tutorial.md](../attention_tutorial.md) | <5s |
+| `axial_attention.py` | Axial attention（H/W 拆分）+ 复杂度对比表 + 感受野验证 | [attention_tutorial.md](../attention_tutorial.md) | <5s |
+| `flow_matching.py` | Rectified Flow on 2D toy data (two moons) + Euler sampling + 轨迹可视化 | [flow_matching_tutorial.md](../flow_matching_tutorial.md) | ~30s |
+| `mmdit_block.py` | 双流 MMDiT block（joint attention + AdaLN-Zero + per-stream FFN） | [image_generation_systems_tutorial.md](../image_generation_systems_tutorial.md) | <5s |
+| `toy_mmdit_t2i_pipeline.py` | End-to-end skeleton（toy text encoder + VAE + MMDiT + Euler scheduler + true CFG） | [image_generation_systems_tutorial.md](../image_generation_systems_tutorial.md) | <10s |
+
+## 运行
+
+```bash
+cd docs/tutorials/code
+python mha.py
+python axial_attention.py
+python flow_matching.py          # 需要 matplotlib（可选，没装会跳过画图）
+python mmdit_block.py
+python toy_mmdit_t2i_pipeline.py # 依赖 mmdit_block.py 在同目录
+```
+
+每个脚本都自带 sanity check：shape 验证 + 数值合理性检查 + 必要时跟 PyTorch
+内置实现对齐。运行失败时会 `assert` 出来。
+
+## 设计目标
+
+1. **教学清晰 > 性能**：每个 op 都展开写，shape 注释齐全
+2. **可独立运行**：默认参数小，CPU 几秒钟跑完，不依赖 GPU
+3. **跟 tutorial 一一对应**：每个脚本对应一个或两个 markdown 文档的核心概念
+4. **常见架构组件、玩具尺寸**：保留主流公开架构组件（双流 MMDiT、AdaLN-Zero、
+   joint attention、Euler scheduler、true CFG），hidden/layer 缩到 toy size
+
+## 不包含什么
+
+- ❌ 真实的预训练权重 / checkpoint
+- ❌ 分布式训练 / 大规模数据加载
+- ❌ Memory-efficient attention kernels / 低精度算子 / 显存优化
+- ❌ Gradient checkpointing
+
+这些都不是教学代码的重点。如果需要看完整工程实现，请参考主流公开的
+diffusion / transformer library。
+
+## English notes
+
+All in-code documentation (docstrings, comments) is in English so the
+code stays accessible to non-Chinese-reading contributors. This README
+itself is bilingual for consistency with the rest of `docs/tutorials/`.
+
