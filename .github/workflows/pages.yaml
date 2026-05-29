@@ -1,15 +1,17 @@
 name: Deploy GitHub Pages
 
 # Replaces the legacy branch-based Pages build (was: source = main /docs).
-# This workflow publishes an HTML-only static site copy from docs/ and deploys
-# it via the official actions/deploy-pages action. The Markdown sources stay in
-# the repo, but only rendered HTML files are exposed on GitHub Pages.
+# This workflow publishes an HTML-only static site copy from the repository
+# root and deploys it via the official actions/deploy-pages action. The source
+# Markdown can stay in the repo, but only rendered HTML files are exposed on
+# GitHub Pages.
 
 on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
+      - "**/*.html"
+      - "assets/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -42,7 +44,13 @@ jobs:
           set -euo pipefail
           rm -rf site
           mkdir -p site
-          rsync -a --prune-empty-dirs --include='*/' --include='*.html' --exclude='*' docs/ site/
+          if [ -d assets ]; then
+            cp -R assets site/
+          fi
+          find . -type f -name '*.html' \
+            -not -path './site/*' \
+            -not -path './.git/*' \
+            -exec bash -c 'mkdir -p "site/$(dirname "$1")" && cp "$1" "site/$1"' _ {} \;
           touch site/.nojekyll
 
       - name: Upload site/ as Pages artifact
