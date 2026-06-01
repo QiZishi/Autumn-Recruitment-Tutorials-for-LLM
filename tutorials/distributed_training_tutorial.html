@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Distributed Training Tutorial</title>
+<title>Distributed Training 面试 Cheat Sheet</title>
 
 <meta name="generator" content="ARIS render-html (academic, v1)">
-<meta name="aris:source-path" content="docs\tutorials\distributed_training_tutorial.md">
-<meta name="aris:source-sha256" content="86087779b70e3bcaf4b22536bdf96eae5fd0d9e07675f4b9c61122ce67ee0af7">
-<meta name="aris:generated-at" content="2026-05-29 02:25 UTC">
+<meta name="aris:source-path" content="docs/tutorials/distributed_training_tutorial.md">
+<meta name="aris:source-sha256" content="9fca080f5e600043ddd52586fa501f8c9d13acf3bb876f66cae5a17cbffadd6b">
+<meta name="aris:generated-at" content="2026-05-31 06:15 UTC">
 
 <!-- MathJax 3 -->
 <script>
@@ -90,9 +90,6 @@ nav.toc h3 {
 nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
 nav.toc ol li { margin: 5px 0; counter-increment: toc; }
 nav.toc ol li::before { content: counter(toc) ". "; color: var(--ink-muted); margin-right: 4px; }
-/* Only selected raw URLs should carry the blue link treatment. */
-a { color: inherit; text-decoration: none; }
-a:hover { color: inherit; }
 nav.toc a {
   color: var(--ink-soft);
   text-decoration: none;
@@ -160,32 +157,6 @@ header.hero .meta code {
   border: 1px solid var(--border-soft);
 }
 
-.home-link {
-  display: block;
-  margin: 0 0 18px;
-}
-.home-link a {
-  display: inline-block;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
-  border-bottom-color: #c8bba1;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500;
-  box-shadow:
-    0 1px 0 rgba(198, 184, 154, 0.85),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
-}
-.home-link a:hover {
-  color: var(--primary-soft);
-  border-color: #cdbf9e;
-  border-bottom-color: #b8a77f;
-  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
-}
-
 h2 {
   font-size: 24px;
   margin: 44px 0 14px;
@@ -195,7 +166,7 @@ h2 {
   font-weight: 700;
 }
 h2 .num { color: var(--primary); font-weight: 600; margin-right: 8px; }
-h3 { font-size: 19px; margin: 28px 0 10px; color: var(--ink); font-weight: 500; }
+h3 { font-size: 19px; margin: 28px 0 10px; color: var(--primary); font-weight: 600; }
 h4 { font-size: 16px; margin: 20px 0 8px; color: var(--ink); font-weight: 600; }
 
 p { margin: 10px 0; }
@@ -206,13 +177,8 @@ ul li::marker { color: var(--primary); }
 strong { color: var(--accent); font-weight: 600; }
 em { color: var(--ink-soft); }
 
-.selected-raw-url {
-  color: var(--primary);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-.selected-raw-url:hover { color: var(--primary-soft); }
+a { color: var(--primary); }
+a:hover { color: var(--accent); }
 
 code:not(.hljs) {
   font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
@@ -298,13 +264,6 @@ details.qa, details {
   border-radius: 6px;
   margin: 10px 0;
   padding: 0;
-}
-details.qa > :not(summary) {
-  padding: 12px 18px;
-}
-details.qa ol,
-details.qa ul {
-  padding-left: 24px;
 }
 details summary {
   cursor: pointer;
@@ -503,6 +462,82 @@ body.aris-blog h2.aris-active-h2 {
   padding-left: 12px;
   margin-left: -12px;
 }
+
+/* --- Focus-dim reading mode (B1) + floating toggle (B2) + ↑/↓ nav (B4) -----
+   Blog opt-in. Everything is scoped under body.aris-blog(.aris-focus-dim) so
+   the 46 non-blog tutorials are completely unaffected (no .aris-blog → button
+   hidden, dim rule never matches). While ON, dims every <main> child except
+   the current section and the intro (header.hero stays bright). F7's io2 is
+   paused while ON; the scroll listener is bound only while ON. */
+body.aris-blog.aris-focus-dim main > *:not(.aris-in-focus) {
+  opacity: 0.28;
+  transition: opacity 0.25s ease;
+}
+body.aris-blog.aris-focus-dim main > .aris-in-focus { opacity: 1; }
+.aris-focus-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 6px 13px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+body.aris-blog .aris-focus-toggle { display: inline-block; }
+.aris-focus-toggle:hover { color: var(--primary); }
+.aris-focus-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.aris-focus-hint {
+  position: fixed;
+  bottom: 18px;
+  right: 16px;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.aris-focus-hint.show { opacity: 1; }
+@media print {
+  .aris-focus-toggle, .aris-focus-hint { display: none !important; }
+  body.aris-focus-dim main > * { opacity: 1 !important; }
+}
+
+.home-link {
+  display: block;
+  margin: 0 0 18px;
+}
+.home-link a {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-bottom-color: #c8bba1;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow:
+    0 1px 0 rgba(198, 184, 154, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.home-link a:hover {
+  color: var(--primary-soft);
+  border-color: #cdbf9e;
+  border-bottom-color: #b8a77f;
+  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
+}
 </style>
 </head>
 <body class="">
@@ -645,14 +680,14 @@ body.aris-blog h2.aris-active-h2 {
 
 <main>
 <header class="hero">
-  
-  <h1>Distributed Training Tutorial</h1>
-  
+  <div class="eyebrow">Interview Prep · Distributed Training Systems</div>
+  <h1>Distributed Training 面试 Cheat Sheet</h1>
+  <p class="subtitle">DDP / FSDP2 / ZeRO / TP / PP / SP / CP / EP — 公式推导 + From-Scratch 代码 + 25 高频题（L1 必会 · L2 进阶 · L3 顶级 lab）</p>
   
   <div class="meta">
-    <span><strong>Source:</strong> <code>docs\tutorials\distributed_training_tutorial.md</code></span>
-    <span><strong>SHA256:</strong> <code>86087779b70e</code></span>
-    <span><strong>Rendered:</strong> 2026-05-29 02:25 UTC</span>
+    <span><strong>Source:</strong> <code>docs/tutorials/distributed_training_tutorial.md</code></span>
+    <span><strong>SHA256:</strong> <code>9fca080f5e60</code></span>
+    <span><strong>Rendered:</strong> 2026-05-31 06:15 UTC</span>
     
   </div>
 </header>
@@ -1023,7 +1058,7 @@ class TPTransformerMLP(nn.Module):
 <pre><code>TP-only:          [B, L, D]                       [B, L, D]
                   全副本                          全副本
                   ↓                                ↑
-                  LayerNorm  → split → Attention → all-gather → LayerNorm
+                  LayerNorm  → split → Attention → all-reduce → LayerNorm
                                        (TP)       
 
 TP + SP:          [B, L/T, D]                      [B, L/T, D]
@@ -1033,7 +1068,7 @@ TP + SP:          [B, L/T, D]                      [B, L/T, D]
                                           (TP)</code></pre>
 <p><strong>关键操作变化</strong>：</p>
 <ul><li>TP-only: forward 内 attention/MLP 入口处需要 broadcast / 退化为 no-op，出口 all-reduce</li><li>TP + SP: 入口处 <strong>all-gather</strong>（把 SP 切的 L 维拼回全长），出口 <strong>reduce-scatter</strong>（把全长 reduce 再切回 L 维）</li></ul>
-<p>通信量：每个 transformer block 在 TP+SP 下需要 1× all-gather + 1× reduce-scatter（替换纯 TP 的 1× all-reduce），二者通信量等价，总量与纯 TP 一致。<strong>$\boxed{\text{通信量与纯 TP 完全相同}}$</strong>——但 LayerNorm / Dropout 的 activation 从 $BLD$ 降到 $BLD/T$。</p>
+<p>通信量：标准 Megatron decoder block 有 attention + MLP <strong>两对</strong> col/row-parallel，所以每个 transformer block 在 TP+SP 下 forward 需要 2× all-gather + 2× reduce-scatter（替换纯 TP forward 的 2× all-reduce），forward + backward 合起来对应 §7 的 4× all-reduce 等价量。每对里 all-gather + reduce-scatter 与一次 all-reduce 通信量等价，总量与纯 TP 一致。<strong>$\boxed{\text{通信量与纯 TP 完全相同}}$</strong>——但 LayerNorm / Dropout 的 activation 从 $BLD$ 降到 $BLD/T$。</p>
 <div class="callout callout-info"><div class="callout-title">SP 通信量为什么和纯 TP 一样</div><p>因为 $\text{all-reduce} = \text{reduce-scatter} + \text{all-gather}$，纯 TP 末端 1× all-reduce $= $ SP 模式下 1× reduce-scatter + 后续 1× all-gather（next block 入口）。<strong>通信被重新分布，总量不变，但 activation 显存省下来了</strong>。</p></div>
 <h3 id="83-sp-activation-memory-省了多少l3-题">8.3 SP activation memory 省了多少（L3 题）</h3>
 <p>设<strong>未切分</strong>的单 transformer block 总 activation 内存为 $A = A_\text{in} + A_\text{out}$，其中：</p>
@@ -1098,7 +1133,7 @@ Interleaved (P=4, V=2, L=8):
     &quot;&quot;&quot;
     # ===== Warm-up: stage_rank 走 (P-1-stage_rank) 个 forward
     for i in range(num_warmup_microbatches):
-        recv_activation_from_prev_stage()
+        activation = recv_activation_from_prev_stage()
         out = forward(model, activation)
         send_activation_to_next_stage(out)
 
@@ -1106,18 +1141,18 @@ Interleaved (P=4, V=2, L=8):
     num_microbatches_remaining = M - num_warmup_microbatches
     for i in range(num_microbatches_remaining):
         # forward
-        recv_activation_from_prev_stage()
+        activation = recv_activation_from_prev_stage()
         out = forward(model, activation)
         send_activation_to_next_stage(out)
 
         # backward (前面 forward 过、现在到的)
-        recv_grad_from_next_stage()
+        grad_out = recv_grad_from_next_stage()
         grad_in = backward(model, grad_out)
         send_grad_to_prev_stage(grad_in)
 
     # ===== Cool-down: 剩余 backward
     for i in range(num_warmup_microbatches):
-        recv_grad_from_next_stage()
+        grad_out = recv_grad_from_next_stage()
         grad_in = backward(model, grad_out)
         send_grad_to_prev_stage(grad_in)</code></pre>
 <h3 id="96-pp-通信特点">9.6 PP 通信特点</h3>
@@ -1258,7 +1293,7 @@ y = checkpoint(block_forward, x, use_reentrant=False)</code></pre>
 <ul><li><strong>短上下文阶段 (8K)</strong>：TP=8 × CP=1 × PP=16 × DP=128 = 16384</li><li><strong>长上下文阶段 (128K)</strong>：TP=8 × CP=16 × PP=16 × DP=8 = 16384</li></ul></li><li>训练精度：<strong>BF16</strong>（论文 Table 报告 BF16 MFU）；FP8 用于 inference 量化，<strong>未用于 405B 训练</strong></li><li><strong>54 天共 466 次中断</strong>（419 unexpected + 47 planned/maintenance），其中 78% unexpected 是硬件原因</li><li>有效训练时间 &gt; 90%</li></ul>
 <h3 id="132-deepseek-v3-训练拓扑公开信息">13.2 DeepSeek-V3 训练拓扑（公开信息）</h3>
 <p>DeepSeek 2024 报告 (<a href="https://arxiv.org/abs/2412.19437">2412.19437</a>)：</p>
-<ul><li>2048 H800 GPUs</li><li>Parallelism: TP=1（<strong>无 TP</strong>！靠 ZeRO + EP + PP 弥补） × PP=16 × EP=64（跨 8 节点） × ZeRO-1 DP</li><li><strong>DualPipe</strong> 双向流水（详见下节）+ all-to-all overlap</li><li>fp8 GEMM + bf16 accumulation</li></ul>
+<ul><li>2048 H800 GPUs</li><li>Parallelism: TP=1（<strong>无 TP</strong>！靠 ZeRO + EP + PP 弥补） × PP=16 × EP=64（跨 8 节点） × ZeRO-1 DP</li><li><strong>DualPipe</strong> 双向流水（详见下节）+ all-to-all overlap</li><li>fp8 GEMM + FP32 accumulation (promoted on CUDA cores)</li></ul>
 <div class="callout callout-info"><div class="callout-title">DeepSeek-V3 为什么不用 TP</div><p>V3 用了 MLA (multi-head latent attention) + 大量 MoE expert，TP 切 head 收益小（latent attention head 维已经很小）；而 EP 的 all-to-all overlap 配合 DualPipe 把通信全藏起来。整体 <strong>PP × EP × ZeRO</strong> 已够装下 671B 参数。</p></div>
 <h2 id="14-dualpipe--2024-流水线前沿">§14 DualPipe — 2024 流水线前沿</h2>
 <p>DeepSeek 2024 在 V3 paper 与独立 repo 发布的 <strong>DualPipe</strong> 算法（arXiv 2412.19437 + github.com/deepseek-ai/DualPipe）。</p>
@@ -1275,7 +1310,7 @@ Reverse 方向 micro-batch: ...[F4&#x27;][F3&#x27;][F2&#x27;][F1&#x27;]
 Stage 0: 同时 process Forward 的 F + Reverse 的 F&#x27; + 对应 B  ← 计算 / 通信完全 overlap</code></pre>
 <p>更精确：DualPipe 设计了一个<strong>双向 schedule</strong>，让每张 GPU 在任意时刻都有两个 micro-batch 在 forward / backward 重叠执行；同时 expert parallel 的 all-to-all 通信也被 hide 在两组 micro-batch 的间隙里。</p>
 <h3 id="142-dualpipe-vs-普通-1f1b-性质">14.2 DualPipe vs 普通 1F1B 性质</h3>
-<table><thead><tr><th>维度</th><th>1F1B</th><th>Interleaved 1F1B</th><th>DualPipe</th></tr></thead><tbody><tr><td>Bubble</td><td>$(P-1)/(M+P-1)$</td><td>$(P-1)/(VM+P-1)$</td><td><strong>理想 0</strong> (warm-up / cool-down 互补)</td></tr><tr><td>Activation memory</td><td>$P$ × per stage</td><td>$V \cdot P$ ×</td><td>$\approx 2 \times P$</td></tr><tr><td>通信 overlap</td><td>部分</td><td>同 1F1B</td><td><strong>几乎 100% all-to-all overlap</strong></td></tr><tr><td>实现复杂度</td><td>中</td><td>高</td><td>极高（需 forward &amp; reverse 调度）</td></tr></tbody></table>
+<table><thead><tr><th>维度</th><th>1F1B</th><th>Interleaved 1F1B</th><th>DualPipe</th></tr></thead><tbody><tr><td>Bubble</td><td>$(P-1)/(M+P-1)$</td><td>$(P-1)/(VM+P-1)$</td><td><strong>接近 0</strong>（warm-up / cool-down 互补，非严格零）</td></tr><tr><td>Activation memory</td><td>$P$ × per stage</td><td>$V \cdot P$ ×</td><td>$\approx 2 \times P$</td></tr><tr><td>通信 overlap</td><td>部分</td><td>同 1F1B</td><td><strong>几乎 100% all-to-all overlap</strong></td></tr><tr><td>实现复杂度</td><td>中</td><td>高</td><td>极高（需 forward &amp; reverse 调度）</td></tr></tbody></table>
 <h3 id="143-dualpipe-的代价">14.3 DualPipe 的代价</h3>
 <ul><li><strong>代码复杂度爆炸</strong>：一个 stage 同时跑 forward (方向 1) + forward (方向 2) + backward，cuda stream 管理极困难</li><li><strong>2× activation memory</strong>：两个方向都要存 activation，比 1F1B 多 $\approx 2\times$</li><li><strong>stage 必须均衡</strong>：任何一个 stage 卡住都会让两个方向都堵</li></ul>
 <p>DeepSeek 用 DualPipe 是因为 EP all-to-all 通信极重，必须想办法藏起来。<strong>一般训练任务普通 1F1B 已足够</strong>。</p>
@@ -1497,7 +1532,7 @@ future.result()                 # 必要时等</code></pre>
 <details>
 
 <summary>Q24. DualPipe 相对 1F1B 的核心改进？</summary>
-<ul><li><strong>双向流水线</strong>：一组 micro-batch 从 stage 0 → P，另一组从 P → 0</li><li>两组在中间相遇时刚好填满 1F1B 的 warm-up / cool-down bubble</li><li><strong>理论 bubble = 0</strong>（理想下两侧互补）</li><li>关键收益：<strong>all-to-all 通信完全 overlap</strong>（EP 重要）</li><li>代价：activation memory $\times 2$（两个方向都要存）；实现极复杂</li><li>DeepSeek-V3 December 2024 报告 (arXiv 2412.19437) + github.com/deepseek-ai/DualPipe</li></ul>
+<ul><li><strong>双向流水线</strong>：一组 micro-batch 从 stage 0 → P，另一组从 P → 0</li><li>两组在中间相遇时刚好填满 1F1B 的 warm-up / cool-down bubble</li><li><strong>bubble 大幅降低、接近 0</strong>（理想下两侧互补，但 DeepSeek-V3 Table 2 给的是非零 bubble 表达式，并非严格零-bubble 调度）</li><li>关键收益：<strong>all-to-all 通信完全 overlap</strong>（EP 重要）</li><li>代价：activation memory $\times 2$（两个方向都要存）；实现极复杂</li><li>DeepSeek-V3 December 2024 报告 (arXiv 2412.19437) + github.com/deepseek-ai/DualPipe</li></ul>
 <p>陷阱：说"DualPipe 是新的 PP 切法"——它是新的 schedule；或忘了 2× activation 的代价。</p>
 </details>
 <details>
@@ -1506,7 +1541,7 @@ future.result()                 # 必要时等</code></pre>
 <ul><li><strong>5 个正交维度</strong>：DP / FSDP × TP × PP × CP × EP</li><li>World size $W = D \times T \times P \times C \times E$</li><li><p>经验法则：</p>
 <ul><li>TP=8（一个节点 NVLink 域内必须塞下）</li><li>PP=8-32（跨节点 IB ok，bubble 控制 $M \geq 4P$）</li><li>CP 看 context 长度（Llama 3 在 128K 用 CP=16，1M 可能 CP=64+）</li><li>EP 看 MoE expert 数（DeepSeek-V3 用 EP=64）</li><li>FSDP / DP 用剩下的 world size</li></ul></li><li><p><strong>Llama 3 405B</strong>（保持总 16K GPU 不变，CP 上 DP 下）:</p>
 <ul><li>8K context: TP=8 × CP=1 × PP=16 × DP=128</li><li>128K context: TP=8 × CP=16 × PP=16 × DP=8</li></ul></li><li><strong>DeepSeek-V3 671B</strong>: TP=1 + PP=16 × EP=64 × ZeRO-1 DP=2，共 2048 H800</li><li><p><strong>关键工程点</strong>：</p>
-<ul><li>通信原语按拓扑放（TP 走 NVLink，PP / DP 走 IB）</li><li>DualPipe / Interleaved 1F1B 压 PP bubble</li><li>FlashAttention v3 + SP / CP 压 activation</li><li>fp8 GEMM（H100 / B100）+ bf16 accumulation 提 throughput</li></ul></li></ul>
+<ul><li>通信原语按拓扑放（TP 走 NVLink，PP / DP 走 IB）</li><li>DualPipe / Interleaved 1F1B 压 PP bubble</li><li>FlashAttention v3 + SP / CP 压 activation</li><li>fp8 GEMM（H100 / B100）+ FP32 accumulation (promoted on CUDA cores) 提 throughput</li></ul></li></ul>
 <p>陷阱：把维度顺序搞反；忘了 TP 必须节点内；以为 DeepSeek 用了 TP（V3 实际 TP=1）。</p>
 </details>
 <h2 id="a-附录完整-4d-wrap-代码骨架">§A 附录：完整 4D wrap 代码骨架</h2>
@@ -1606,9 +1641,9 @@ def train_step_4d(pp_stage, schedule, optimizer, batch):
 
 <footer class="aris-footer">
   Generated by <a href="https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/blob/main/skills/render-html/SKILL.md">ARIS <code>/render-html</code></a> ·
-  source path <code>docs\tutorials\distributed_training_tutorial.md</code> ·
-  SHA256 <code>86087779b70e</code> ·
-  generated at 2026-05-29 02:25 UTC.
+  source path <code>docs/tutorials/distributed_training_tutorial.md</code> ·
+  SHA256 <code>9fca080f5e60</code> ·
+  generated at 2026-05-31 06:15 UTC.
   This is a generated view — edit the source Markdown, then re-render.
 </footer>
 </main>
@@ -1818,6 +1853,122 @@ def train_step_4d(pp_stage, schedule, optimizer, batch):
         });
       }, { rootMargin: "-15% 0px -75% 0px" });
       h2s.forEach(function (h) { io2.observe(h); });
+    }
+
+    // --- Feature 8: Focus-dim reading mode (B1) + floating toggle (B2) +
+    //     ↑/↓ section nav (B4). Built only inside this .aris-blog guard, so
+    //     non-blog tutorials never construct it. Default OFF. While ON:
+    //     dims non-current sections (h3-granular), keeps the intro bright,
+    //     pauses F7's io2, and binds a scroll listener (removed on OFF — no
+    //     new *persistent* global hook). Restores everything on OFF / print.
+    var mainEl = document.querySelector("main");
+    if (mainEl) {
+      var focusBtn = document.createElement("button");
+      focusBtn.className = "aris-focus-toggle";
+      focusBtn.type = "button";
+      focusBtn.setAttribute("aria-pressed", "false");
+      focusBtn.textContent = "🎯 Focus";
+      document.body.appendChild(focusBtn);
+
+      var focusHint = document.createElement("div");
+      focusHint.className = "aris-focus-hint";
+      document.body.appendChild(focusHint);
+      var hintTimer = null;
+      var showFocusHint = function (msg) {
+        focusHint.textContent = msg;
+        focusHint.classList.add("show");
+        if (hintTimer) clearTimeout(hintTimer);
+        hintTimer = setTimeout(function () { focusHint.classList.remove("show"); }, 1600);
+      };
+
+      var focusKids = function () { return [].slice.call(mainEl.children); };
+      var headerIdxList = function (kids) {
+        var idxs = [];
+        kids.forEach(function (el, i) {
+          if (el.tagName === "H2" || el.tagName === "H3") idxs.push(i);
+        });
+        return idxs;
+      };
+      // Deterministic current-section pick (no IntersectionObserver): the
+      // header whose top is closest to but above the viewport's 40% line;
+      // fallback = first header still below the line; then first header.
+      var activeHeaderIdx = function (kids, headerIdxs) {
+        var best = -1, bestTop = -Infinity, lineY = window.innerHeight * 0.4;
+        headerIdxs.forEach(function (idx) {
+          var top = kids[idx].getBoundingClientRect().top;
+          if (top < lineY && top > bestTop) { bestTop = top; best = idx; }
+        });
+        if (best < 0) {
+          for (var i = 0; i < headerIdxs.length; i++) {
+            if (kids[headerIdxs[i]].getBoundingClientRect().top >= 0) { best = headerIdxs[i]; break; }
+          }
+          if (best < 0) best = headerIdxs[0];
+        }
+        return best;
+      };
+      var updateFocus = function () {
+        var kids = focusKids();
+        var headerIdxs = headerIdxList(kids);
+        if (!headerIdxs.length) {                 // no h2/h3 → keep all bright (never dim a headerless page)
+          kids.forEach(function (el) { el.classList.add("aris-in-focus"); });
+          return;
+        }
+        var best = activeHeaderIdx(kids, headerIdxs);
+        var next = kids.length;
+        for (var j = 0; j < headerIdxs.length; j++) {
+          if (headerIdxs[j] > best) { next = headerIdxs[j]; break; }
+        }
+        var introEnd = headerIdxs[0];  // header.hero + anything before first heading stays bright
+        kids.forEach(function (el, i) {
+          el.classList.toggle("aris-in-focus", (i < introEnd) || (i >= best && i < next));
+        });
+      };
+      var onFocusScroll = function () {
+        if (document.body.classList.contains("aris-focus-dim")) updateFocus();
+      };
+      var onFocusKeydown = function (e) {
+        var tg = e.target;
+        if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA" || tg.tagName === "SELECT" || tg.isContentEditable)) return;
+        if (e.key === "Escape") {
+          var popEl = document.getElementById("cite-pop");
+          if (popEl && !popEl.hidden) return;     // an open popover handles Esc first
+          setFocus(false);
+          return;
+        }
+        if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+        e.preventDefault();
+        var heads = [].slice.call(document.querySelectorAll("main h2, main h3"));
+        if (!heads.length) return;
+        var cur = 0, bestDist = Infinity;
+        heads.forEach(function (h, i) {
+          var d = Math.abs(h.getBoundingClientRect().top - 80);
+          if (d < bestDist) { bestDist = d; cur = i; }
+        });
+        var ni = e.key === "ArrowDown" ? Math.min(cur + 1, heads.length - 1) : Math.max(cur - 1, 0);
+        heads[ni].scrollIntoView({ behavior: "smooth", block: "start" });
+        showFocusHint((ni + 1) + " / " + heads.length + "　" + heads[ni].textContent.trim().slice(0, 24));
+      };
+      var setFocus = function (on) {
+        document.body.classList.toggle("aris-focus-dim", on);
+        focusBtn.classList.toggle("on", on);
+        focusBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        focusBtn.textContent = on ? "🎯 Focus ON" : "🎯 Focus";
+        if (on) {
+          window.addEventListener("scroll", onFocusScroll, { passive: true });
+          document.addEventListener("keydown", onFocusKeydown, true);    // capture phase: see an open popover before its bubble Esc handler (also: bound only while ON, guardrail 2)
+          if (typeof io2 !== "undefined" && io2) io2.disconnect();        // pause F7
+          updateFocus();
+          showFocusHint("Focus 模式：↑ / ↓ 切换小节，Esc 退出");
+        } else {
+          window.removeEventListener("scroll", onFocusScroll);
+          document.removeEventListener("keydown", onFocusKeydown, true);
+          focusKids().forEach(function (el) { el.classList.remove("aris-in-focus"); });
+          if (typeof io2 !== "undefined" && io2) h2s.forEach(function (h) { io2.observe(h); });  // resume F7
+        }
+      };
+      focusBtn.addEventListener("click", function () {
+        setFocus(!document.body.classList.contains("aris-focus-dim"));
+      });
     }
   }
 })();

@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vlm Multimodal Tutorial</title>
+<title>VLM / Multimodal 面试 Cheat Sheet</title>
 
 <meta name="generator" content="ARIS render-html (academic, v1)">
-<meta name="aris:source-path" content="docs\tutorials\vlm_multimodal_tutorial.md">
-<meta name="aris:source-sha256" content="f9cc9510bdd535499bcf756290f8ccf31a6785c97df3fa1dabb9e9c1bf74541f">
-<meta name="aris:generated-at" content="2026-05-29 02:25 UTC">
+<meta name="aris:source-path" content="docs/tutorials/vlm_multimodal_tutorial.md">
+<meta name="aris:source-sha256" content="247c88185218c0dd9a9c3462177f7c310a5cd8c1972c9669575dd11f136c3914">
+<meta name="aris:generated-at" content="2026-05-31 06:15 UTC">
 
 <!-- MathJax 3 -->
 <script>
@@ -90,9 +90,6 @@ nav.toc h3 {
 nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
 nav.toc ol li { margin: 5px 0; counter-increment: toc; }
 nav.toc ol li::before { content: counter(toc) ". "; color: var(--ink-muted); margin-right: 4px; }
-/* Only selected raw URLs should carry the blue link treatment. */
-a { color: inherit; text-decoration: none; }
-a:hover { color: inherit; }
 nav.toc a {
   color: var(--ink-soft);
   text-decoration: none;
@@ -160,32 +157,6 @@ header.hero .meta code {
   border: 1px solid var(--border-soft);
 }
 
-.home-link {
-  display: block;
-  margin: 0 0 18px;
-}
-.home-link a {
-  display: inline-block;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
-  border-bottom-color: #c8bba1;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500;
-  box-shadow:
-    0 1px 0 rgba(198, 184, 154, 0.85),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
-}
-.home-link a:hover {
-  color: var(--primary-soft);
-  border-color: #cdbf9e;
-  border-bottom-color: #b8a77f;
-  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
-}
-
 h2 {
   font-size: 24px;
   margin: 44px 0 14px;
@@ -195,7 +166,7 @@ h2 {
   font-weight: 700;
 }
 h2 .num { color: var(--primary); font-weight: 600; margin-right: 8px; }
-h3 { font-size: 19px; margin: 28px 0 10px; color: var(--ink); font-weight: 500; }
+h3 { font-size: 19px; margin: 28px 0 10px; color: var(--primary); font-weight: 600; }
 h4 { font-size: 16px; margin: 20px 0 8px; color: var(--ink); font-weight: 600; }
 
 p { margin: 10px 0; }
@@ -206,13 +177,8 @@ ul li::marker { color: var(--primary); }
 strong { color: var(--accent); font-weight: 600; }
 em { color: var(--ink-soft); }
 
-.selected-raw-url {
-  color: var(--primary);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-.selected-raw-url:hover { color: var(--primary-soft); }
+a { color: var(--primary); }
+a:hover { color: var(--accent); }
 
 code:not(.hljs) {
   font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
@@ -298,13 +264,6 @@ details.qa, details {
   border-radius: 6px;
   margin: 10px 0;
   padding: 0;
-}
-details.qa > :not(summary) {
-  padding: 12px 18px;
-}
-details.qa ol,
-details.qa ul {
-  padding-left: 24px;
 }
 details summary {
   cursor: pointer;
@@ -503,6 +462,82 @@ body.aris-blog h2.aris-active-h2 {
   padding-left: 12px;
   margin-left: -12px;
 }
+
+/* --- Focus-dim reading mode (B1) + floating toggle (B2) + ↑/↓ nav (B4) -----
+   Blog opt-in. Everything is scoped under body.aris-blog(.aris-focus-dim) so
+   the 46 non-blog tutorials are completely unaffected (no .aris-blog → button
+   hidden, dim rule never matches). While ON, dims every <main> child except
+   the current section and the intro (header.hero stays bright). F7's io2 is
+   paused while ON; the scroll listener is bound only while ON. */
+body.aris-blog.aris-focus-dim main > *:not(.aris-in-focus) {
+  opacity: 0.28;
+  transition: opacity 0.25s ease;
+}
+body.aris-blog.aris-focus-dim main > .aris-in-focus { opacity: 1; }
+.aris-focus-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 6px 13px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+body.aris-blog .aris-focus-toggle { display: inline-block; }
+.aris-focus-toggle:hover { color: var(--primary); }
+.aris-focus-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.aris-focus-hint {
+  position: fixed;
+  bottom: 18px;
+  right: 16px;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.aris-focus-hint.show { opacity: 1; }
+@media print {
+  .aris-focus-toggle, .aris-focus-hint { display: none !important; }
+  body.aris-focus-dim main > * { opacity: 1 !important; }
+}
+
+.home-link {
+  display: block;
+  margin: 0 0 18px;
+}
+.home-link a {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-bottom-color: #c8bba1;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow:
+    0 1px 0 rgba(198, 184, 154, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.home-link a:hover {
+  color: var(--primary-soft);
+  border-color: #cdbf9e;
+  border-bottom-color: #b8a77f;
+  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
+}
 </style>
 </head>
 <body class="">
@@ -634,21 +669,21 @@ body.aris-blog h2.aris-active-h2 {
 
 <main>
 <header class="hero">
-  
-  <h1>Vlm Multimodal Tutorial</h1>
-  
+  <div class="eyebrow">Interview Prep · Vision-Language Models</div>
+  <h1>VLM / Multimodal 面试 Cheat Sheet</h1>
+  <p class="subtitle">公式推导 + From-Scratch 代码 + 25 高频题（L1 必会 · L2 进阶 · L3 顶级 lab）</p>
   
   <div class="meta">
-    <span><strong>Source:</strong> <code>docs\tutorials\vlm_multimodal_tutorial.md</code></span>
-    <span><strong>SHA256:</strong> <code>f9cc9510bdd5</code></span>
-    <span><strong>Rendered:</strong> 2026-05-29 02:25 UTC</span>
+    <span><strong>Source:</strong> <code>docs/tutorials/vlm_multimodal_tutorial.md</code></span>
+    <span><strong>SHA256:</strong> <code>247c88185218</code></span>
+    <span><strong>Rendered:</strong> 2026-05-31 06:15 UTC</span>
     
   </div>
 </header>
 
 <h2 id="0-tldr-cheat-sheet">§0 TL;DR Cheat Sheet</h2>
 <div class="callout callout-info"><div class="callout-title">8 句话搞定 VLM</div><p>一页拿下视觉-语言模型面试核心要点（详见后文 §1–§13 推导与代码）。</p></div>
-<ol><li><strong>视觉 encoder = ViT 主导</strong>：Dosovitskiy et al. 2021 (ICLR) 把图像切 $P\times P$ patch（一般 $P=14$ 或 $16$）做线性投影 + 可学习 positional embedding + 可选 <code>[CLS]</code> token，输入 Transformer encoder。<strong>CLIP / SigLIP / LLaVA 的视觉端都是 ViT 变体</strong>。</li><li><strong>CLIP 对称 InfoNCE（必推）</strong>：Radford et al. 2021 (ICML) 让 image embedding $\mathbf{u}_i$ 和 text embedding $\mathbf{v}_i$ 在共享空间里做对比学习，loss 为 <strong>行 softmax + 列 softmax 平均</strong>：$\mathcal{L} = \tfrac{1}{2}(\mathcal{L}_{i\to t} + \mathcal{L}_{t\to i})$。温度 $\tau$ 可学习（log-parameterize，clip 到 $[0,100]$）。</li><li><strong>SigLIP 用 sigmoid 替 softmax</strong>：Zhai et al. 2023 (ICCV) 把 N×N 相似度矩阵的每一项独立做 binary CE，<strong>摆脱 batch-wise softmax 归一化</strong>，因此对 batch size 不再线性敏感，单机能用 32k+ batch 训；引入 learnable bias $b$ 修正初期 negative dominance。<strong>SigLIP-2 (Google 2025)</strong> 加入 caption + self-distillation + dense local objectives 并扩展多语言。</li><li><strong>LLaVA = projector + 2-stage train</strong>：Liu et al. 2023 (NeurIPS) 用一个 <strong>轻量 MLP projector</strong> 把 frozen CLIP 视觉特征投到 LLM token 空间。<strong>Stage 1</strong> 只训 projector 做 feature alignment（caption 数据），<strong>Stage 2</strong> 解冻 LLM 做 visual instruction tuning（GPT-4 生成的 158K instructions）。</li><li><strong>Q-Former vs Projector 是 BLIP-2 的核心 trade-off</strong>：Li et al. 2023 (ICML) 用 32 个 learnable query token 在 frozen image encoder 上做 <strong>cross-attention</strong>，把任意分辨率/数量的 patch 压成固定 32 token——计算预算稳定但<strong>信息有损 + 训练复杂</strong>。LLaVA 的 MLP 简单但 token 数随分辨率二次增长。</li><li><strong>Flamingo / Llama-3.2-Vision = gated cross-attn</strong>：Alayrac et al. 2022 (NeurIPS) 用 <strong>Perceiver Resampler</strong>（64 latent query）把 visual feature 压成固定数 token，再在 LLM 每隔几层插入 <strong>gated cross-attention</strong> 层（$\tanh$ 门控初始化为 0，保留 frozen LLM 的 text-only 能力）。</li><li><strong>Qwen2-VL 的 M-RoPE 必考</strong>：Wang et al. 2024 把 RoPE 沿 head_dim 分成 6 段，按 axis 序列 $(t, h, w, t, h, w)$ 分配 (t / h / w 三组位置 id)；典型配置 <code>mrope_section=[16,24,24]</code>（单位是半 head_dim 的对数，$\sum \times 2 = $ head_dim=128，<strong>全部 128 维都旋转</strong>）。这样每个 token 同时携带 (t, h, w) 三维位置而不需要扁平化。<strong>配合 native dynamic resolution</strong>（不再 padding 到固定 224×224）。</li><li><strong>训练三段式 + 偏好优化</strong>：(1) <strong>alignment</strong> 训 projector / Q-Former；(2) <strong>visual instruction tune</strong> 解冻部分 LLM；(3) <strong>preference</strong>（LLaVA-RLHF, RLAIF-V, VLM-R1, DPO/PPO）治理幻觉、对齐 long-tail。<strong>VLM-R1 (2025)</strong> 用 GRPO + verifiable reward 把推理能力迁到视觉-语言任务。</li></ol>
+<ol><li><strong>视觉 encoder = ViT 主导</strong>：Dosovitskiy et al. 2021 (ICLR) 把图像切 $P\times P$ patch（一般 $P=14$ 或 $16$）做线性投影 + 可学习 positional embedding + 可选 <code>[CLS]</code> token，输入 Transformer encoder。<strong>CLIP / SigLIP / LLaVA 的视觉端都是 ViT 变体</strong>。</li><li><strong>CLIP 对称 InfoNCE（必推）</strong>：Radford et al. 2021 (ICML) 让 image embedding $\mathbf{u}_i$ 和 text embedding $\mathbf{v}_i$ 在共享空间里做对比学习，loss 为 <strong>行 softmax + 列 softmax 平均</strong>：$\mathcal{L} = \tfrac{1}{2}(\mathcal{L}_{i\to t} + \mathcal{L}_{t\to i})$。温度 $\tau$ 可学习（log-parameterize，clip 到 $[0,100]$）。</li><li><strong>SigLIP 用 sigmoid 替 softmax</strong>：Zhai et al. 2023 (ICCV) 把 N×N 相似度矩阵的每一项独立做 binary CE，<strong>摆脱 batch-wise softmax 归一化</strong>，因此对 batch size 不再线性敏感，单机能用 32k+ batch 训；引入 learnable bias $b$ 修正初期 negative dominance。<strong>SigLIP-2 (Google 2025)</strong> 加入 caption + self-distillation + dense local objectives 并扩展多语言。</li><li><strong>LLaVA = projector + 2-stage train</strong>：Liu et al. 2023 (NeurIPS) 用一个 <strong>单层线性投影矩阵 $W$</strong> 把 frozen CLIP 视觉特征投到 LLM token 空间（<strong>2 层 MLP projector 是 LLaVA-1.5 的升级</strong>）。<strong>Stage 1</strong> 只训 projector 做 feature alignment（caption 数据），<strong>Stage 2</strong> 解冻 LLM 做 visual instruction tuning（GPT-4 生成的 158K instructions）。</li><li><strong>Q-Former vs Projector 是 BLIP-2 的核心 trade-off</strong>：Li et al. 2023 (ICML) 用 32 个 learnable query token 在 frozen image encoder 上做 <strong>cross-attention</strong>，把任意分辨率/数量的 patch 压成固定 32 token——计算预算稳定但<strong>信息有损 + 训练复杂</strong>。LLaVA 的 MLP 简单但 token 数随分辨率二次增长。</li><li><strong>Flamingo / Llama-3.2-Vision = gated cross-attn</strong>：Alayrac et al. 2022 (NeurIPS) 用 <strong>Perceiver Resampler</strong>（64 latent query）把 visual feature 压成固定数 token，再在 LLM 每隔几层插入 <strong>gated cross-attention</strong> 层（$\tanh$ 门控初始化为 0，保留 frozen LLM 的 text-only 能力）。</li><li><strong>Qwen2-VL 的 M-RoPE 必考</strong>：Wang et al. 2024 把 RoPE 沿 head_dim 分成 6 段，按 axis 序列 $(t, h, w, t, h, w)$ 分配 (t / h / w 三组位置 id)；典型配置 <code>mrope_section=[16,24,24]</code>（单位是半 head_dim 的对数，$\sum \times 2 = $ head_dim=128，<strong>全部 128 维都旋转</strong>）。这样每个 token 同时携带 (t, h, w) 三维位置而不需要扁平化。<strong>配合 native dynamic resolution</strong>（不再 padding 到固定 224×224）。</li><li><strong>训练三段式 + 偏好优化</strong>：(1) <strong>alignment</strong> 训 projector / Q-Former；(2) <strong>visual instruction tune</strong> 解冻部分 LLM；(3) <strong>preference</strong>（LLaVA-RLHF, RLAIF-V, VLM-R1, DPO/PPO）治理幻觉、对齐 long-tail。<strong>VLM-R1 (2025)</strong> 用 GRPO + verifiable reward 把推理能力迁到视觉-语言任务。</li></ol>
 <h2 id="1-直觉vlm-在做什么">§1 直觉：VLM 在做什么？</h2>
 <p>把一张图看作 "另一种语言"。VLM 的工作可以拆成三件事：</p>
 <ul><li><strong>视觉 tokenizer</strong>：把像素压成离散或连续的 token 序列（ViT patch → embedding）</li><li><strong>跨模态对齐</strong>：让相同语义的 image / text 在同一空间靠近——这是 CLIP / SigLIP 干的事，本质是 <strong>学一个共享 embedding space</strong></li><li><strong>跨模态生成</strong>：让 LLM 在 prompt 里"看见"图片——LLaVA / Qwen-VL / Flamingo 干的事，本质是 <strong>把 image token 作为前缀塞进 LLM 的 context</strong></li></ul>
@@ -868,13 +903,13 @@ class SigLIPLoss(nn.Module):
 <ul><li><strong>CLIP filtering</strong> + <strong>basic filtering</strong> + <strong>image-based</strong> 三种 filter 组合最优</li><li>大模型 (ViT-L/14) 在小数据 (12.8M) 上反而不如 ViT-B（<strong>data-limited regime 下大模型过拟合</strong>）</li></ul>
 <h3 id="54-对比一览">5.4　对比一览</h3>
 <table><thead><tr><th>方法</th><th>Vision Tower 初始化</th><th>Loss</th><th>Batch</th><th>训练数据</th><th>ImageNet zero-shot</th></tr></thead><tbody><tr><td>CLIP (OpenAI)</td><td>from scratch</td><td>softmax InfoNCE</td><td>32k</td><td>WIT 400M</td><td>76.2% (L/14@336)</td></tr><tr><td>OpenCLIP</td><td>from scratch</td><td>softmax InfoNCE</td><td>90k</td><td>LAION-2B</td><td>80.1% (bigG/14)</td></tr><tr><td>EVA-CLIP</td><td>EVA-02 MIM</td><td>softmax InfoNCE</td><td>—</td><td>LAION-2B</td><td>82.0% (E/14+)</td></tr><tr><td>SigLIP</td><td>from scratch</td><td>sigmoid</td><td>32k</td><td>WebLI</td><td>82.0% (So400M/14)</td></tr><tr><td>SigLIP-2</td><td>from scratch</td><td>sigmoid + caption + distill</td><td>—</td><td>WebLI 10B</td><td>84%+</td></tr><tr><td>MetaCLIP</td><td>from scratch</td><td>softmax InfoNCE</td><td>—</td><td>重新构造 LAION-grade</td><td>79.2% (H/14)</td></tr></tbody></table>
-<div class="callout callout-info"><div class="callout-title">2024–2025 趋势</div><p>SigLIP 系列在 zero-shot ImageNet 和下游 retrieval 上已经稳定超过 CLIP；典型开放权重 VLM 用 SigLIP-So400M 的是 <strong>PaliGemma / LLaVA-OneVision / Molmo</strong>。<strong>InternVL 系列用自家的 InternViT；Qwen2-VL 用自训 ViT；LLaVA-1.5/1.6 仍用 CLIP ViT-L/14</strong>——并非"切到 SigLIP"是行业共识。</p></div>
+<div class="callout callout-info"><div class="callout-title">2024–2025 趋势</div><p>SigLIP 系列在 zero-shot ImageNet 和下游 retrieval 上已经稳定超过 CLIP；典型开放权重 VLM 用 SigLIP-So400M 的是 <strong>PaliGemma / LLaVA-OneVision</strong>。<strong>Molmo/PixMo 主模型仍用 OpenAI CLIP ViT-L/14@336（SigLIP 只出现在其论文 ablation）；InternVL 系列用自家的 InternViT；Qwen2-VL 用自训 ViT；LLaVA-1.5/1.6 仍用 CLIP ViT-L/14</strong>——并非"切到 SigLIP"是行业共识。</p></div>
 <h2 id="6-llavaprojector--2-stage-训练">§6 LLaVA：projector + 2-stage 训练</h2>
 <h3 id="61-架构">6.1　架构</h3>
 <p>LLaVA（Liu et al. 2023 NeurIPS）的核心是三件套：</p>
 <pre class="diagram"><code>Image ──► CLIP ViT-L/14 ──► visual features  z_v ∈ R^{N × d_v}
                                   │
-                                  │  W ∈ R^{d_v × d_LLM}   ← MLP projector
+                                  │  W ∈ R^{d_v × d_LLM}   ← projector（1.0 单层线性 / 1.5 2 层 MLP）
                                   ↓
                             H_v ∈ R^{N × d_LLM}
                                   │
@@ -956,7 +991,7 @@ class LLaVA(nn.Module):
         attention_mask = torch.nn.utils.rnn.pad_sequence(new_mask, batch_first=True) if attention_mask is not None else None
         return self.llm(inputs_embeds=inputs_embeds, labels=labels, attention_mask=attention_mask)</code></pre>
 <h3 id="64-llava-15--16--next-关键升级">6.4　LLaVA-1.5 / 1.6 / NeXT 关键升级</h3>
-<table><thead><tr><th>版本</th><th>时间</th><th>主要改动</th></tr></thead><tbody><tr><td>LLaVA-1.0</td><td>2023.04</td><td>单层 Linear projector；CLIP ViT-L/14@224²，视觉 token = 256（$16\times 16$）</td></tr><tr><td>LLaVA-1.5</td><td>2023.10</td><td>2-layer MLP；分辨率升到 336²，视觉 token = 576（$24\times 24$）；加入 OCR / GQA / VQAv2 等学术数据</td></tr><tr><td>LLaVA-1.6 / NeXT</td><td>2024.01</td><td><strong>AnyRes</strong>：把图切成 $2\times 2 / 2\times 3 / \dots$ tile 各编码再拼，支持任意 aspect ratio；token 数最多 2880</td></tr><tr><td>LLaVA-OneVision</td><td>2024.08</td><td>单 / 多图 / 视频统一；引入 SI（single image）+ OV（onevision）数据 mix</td></tr><tr><td>LLaVA-NeXT-Video</td><td>2024.04</td><td>视频版，把多帧 visual feature 序列化喂入</td></tr></tbody></table>
+<table><thead><tr><th>版本</th><th>时间</th><th>主要改动</th></tr></thead><tbody><tr><td>LLaVA-1.0</td><td>2023.04</td><td>单层 Linear projector；CLIP ViT-L/14@224²，视觉 token = 256（$16\times 16$）</td></tr><tr><td>LLaVA-1.5</td><td>2023.10</td><td>2-layer MLP；分辨率升到 336²，视觉 token = 576（$24\times 24$）；加入 OCR / GQA / VQAv2 等学术数据</td></tr><tr><td>LLaVA-1.6 / NeXT</td><td>2024.01</td><td><strong>AnyRes</strong>：把图切成 $2\times 2 / 2\times 3 / \dots$ tile 各编码再拼，支持任意 aspect ratio；token 数 $(1{+}n{\cdot}m)\cdot 576$（2×2→2880，2×3→4032）</td></tr><tr><td>LLaVA-OneVision</td><td>2024.08</td><td>单 / 多图 / 视频统一；引入 SI（single image）+ OV（onevision）数据 mix</td></tr><tr><td>LLaVA-NeXT-Video</td><td>2024.04</td><td>视频版，把多帧 visual feature 序列化喂入</td></tr></tbody></table>
 <div class="callout callout-info"><div class="callout-title">AnyRes (LLaVA-1.6) 的核心 trick</div><p>训练时假设 fixed 336²；推理时把高分辨率图切成 $n \times m$ 个 336² tile 各自编码，再加一份缩放到 336² 的"全局缩略图"。<strong>token 数从 576 涨到 (1 + n·m)·576</strong>，但每个 tile 仍走同一个 frozen ViT。<strong>和 InternVL / Qwen-VL 的 tiling 是同一类思路</strong>。</p></div>
 <h2 id="7-blip-2q-former-cross-attention">§7 BLIP-2：Q-Former cross-attention</h2>
 <h3 id="71-motivation">7.1　Motivation</h3>
@@ -1083,7 +1118,7 @@ class QFormer(nn.Module):
 <h3 id="105-code-m-rope-三维位置嵌入核心-50-行对齐-qwen2-vl-hf-实现">10.5　Code: M-RoPE 三维位置嵌入（核心 50 行，对齐 Qwen2-VL HF 实现）</h3>
 <pre><code class="language-python">import torch
 
-def build_mrope_cos_sin(positions, head_dim, mrope_section=(16, 24, 24), base=10000.0):
+def build_mrope_cos_sin(positions, head_dim, mrope_section=(16, 24, 24), base=1000000.0):
     &quot;&quot;&quot;
     Build cos/sin tensors for Qwen2-VL style M-RoPE.
 
@@ -1152,7 +1187,7 @@ def apply_mrope(q, k, cos, sin):
 <h2 id="12-训练-pipelinealignment--instruct--preference">§12 训练 pipeline：alignment / instruct / preference</h2>
 <h3 id="121-stage-1alignment--pre-training">12.1　Stage 1：Alignment / Pre-training</h3>
 <p>目的：让视觉特征"对齐"到 LLM token 空间附近。</p>
-<ul><li><strong>数据</strong>：image-caption pair（CC3M, LAION-558K, ShareGPT4V）</li><li><strong>训练</strong>：只解冻 projector（LLaVA）/ Q-Former (BLIP-2)，<strong>vision tower + LLM 冻结</strong></li><li><strong>Loss</strong>：next-token prediction（用 LLM 把 visual feature 作 prefix，生成 caption）</li></ul>
+<ul><li><strong>数据</strong>：image-caption pair（CC3M, LAION-558K, ShareGPT4V）</li><li><strong>训练</strong>：只解冻 projector（LLaVA）/ Q-Former (BLIP-2)，<strong>vision tower + LLM 冻结</strong></li><li><strong>Loss</strong>：LLaVA 用 next-token prediction（用 LLM 把 visual feature 作 prefix，生成 caption）；<strong>BLIP-2 此处不接 LLM</strong>——Q-Former 的 Stage 1 是表征学习，在 frozen image encoder 上联合优化 ITC + ITM + ITG，frozen LLM 要到 Stage 2（generative learning）才接入</li></ul>
 <h3 id="122-stage-2visual-instruction-tuning">12.2　Stage 2：Visual Instruction Tuning</h3>
 <p>目的：教会 VLM "看图回答问题、follow instruction"。</p>
 <ul><li><strong>数据</strong>：GPT-4 生成的 visual instruction（LLaVA-Instruct-158K, ShareGPT4V）+ 学术 VQA 数据（VQAv2, GQA, OCR-VQA, TextVQA）</li><li><strong>训练</strong>：解冻 LLM + projector，<strong>vision tower 一般保持冻结</strong>（LLaVA-1.5 / Qwen-VL）。<strong>Qwen2-VL 在最后阶段也解冻 vision tower</strong>做 end-to-end fine-tune</li><li><strong>Loss</strong>：next-token prediction on answer tokens（input image + question 不算 loss）</li></ul>
@@ -1360,7 +1395,7 @@ def apply_mrope(q, k, cos, sin):
 <pre><code>[ViT] patch_embed: (2, 3, 224, 224) -&gt; (2, 196, 768)  ✓
 [ViT] forward + CLS: (2, 3, 224, 224) -&gt; head out (2, 1000)  ✓
 
-[CLIP] N=8, D=512, init logit_scale=ln(1/0.07): loss ≈ 2.08 ≈ log(N) (random embeddings → near-uniform softmax)  ✓
+[CLIP] N=8, D=512, init logit_scale=ln(1/0.07)→1/τ≈14.285: loss ≈ 2.25 (略高于 log(N)=2.08；loss≈log N 仅在 1/τ 极小时成立)  ✓
 [CLIP] forward + backward: gradients along i→t 与 t→i path 对称 ✓
 
 [SigLIP] N=8, D=512, b=0:  loss = sum_{ij} log(1+e^0) / N = 64 * log 2 / 8 ≈ 5.545  ✓
@@ -1385,9 +1420,9 @@ def apply_mrope(q, k, cos, sin):
 
 <footer class="aris-footer">
   Generated by <a href="https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/blob/main/skills/render-html/SKILL.md">ARIS <code>/render-html</code></a> ·
-  source path <code>docs\tutorials\vlm_multimodal_tutorial.md</code> ·
-  SHA256 <code>f9cc9510bdd5</code> ·
-  generated at 2026-05-29 02:25 UTC.
+  source path <code>docs/tutorials/vlm_multimodal_tutorial.md</code> ·
+  SHA256 <code>247c88185218</code> ·
+  generated at 2026-05-31 06:15 UTC.
   This is a generated view — edit the source Markdown, then re-render.
 </footer>
 </main>
@@ -1597,6 +1632,122 @@ def apply_mrope(q, k, cos, sin):
         });
       }, { rootMargin: "-15% 0px -75% 0px" });
       h2s.forEach(function (h) { io2.observe(h); });
+    }
+
+    // --- Feature 8: Focus-dim reading mode (B1) + floating toggle (B2) +
+    //     ↑/↓ section nav (B4). Built only inside this .aris-blog guard, so
+    //     non-blog tutorials never construct it. Default OFF. While ON:
+    //     dims non-current sections (h3-granular), keeps the intro bright,
+    //     pauses F7's io2, and binds a scroll listener (removed on OFF — no
+    //     new *persistent* global hook). Restores everything on OFF / print.
+    var mainEl = document.querySelector("main");
+    if (mainEl) {
+      var focusBtn = document.createElement("button");
+      focusBtn.className = "aris-focus-toggle";
+      focusBtn.type = "button";
+      focusBtn.setAttribute("aria-pressed", "false");
+      focusBtn.textContent = "🎯 Focus";
+      document.body.appendChild(focusBtn);
+
+      var focusHint = document.createElement("div");
+      focusHint.className = "aris-focus-hint";
+      document.body.appendChild(focusHint);
+      var hintTimer = null;
+      var showFocusHint = function (msg) {
+        focusHint.textContent = msg;
+        focusHint.classList.add("show");
+        if (hintTimer) clearTimeout(hintTimer);
+        hintTimer = setTimeout(function () { focusHint.classList.remove("show"); }, 1600);
+      };
+
+      var focusKids = function () { return [].slice.call(mainEl.children); };
+      var headerIdxList = function (kids) {
+        var idxs = [];
+        kids.forEach(function (el, i) {
+          if (el.tagName === "H2" || el.tagName === "H3") idxs.push(i);
+        });
+        return idxs;
+      };
+      // Deterministic current-section pick (no IntersectionObserver): the
+      // header whose top is closest to but above the viewport's 40% line;
+      // fallback = first header still below the line; then first header.
+      var activeHeaderIdx = function (kids, headerIdxs) {
+        var best = -1, bestTop = -Infinity, lineY = window.innerHeight * 0.4;
+        headerIdxs.forEach(function (idx) {
+          var top = kids[idx].getBoundingClientRect().top;
+          if (top < lineY && top > bestTop) { bestTop = top; best = idx; }
+        });
+        if (best < 0) {
+          for (var i = 0; i < headerIdxs.length; i++) {
+            if (kids[headerIdxs[i]].getBoundingClientRect().top >= 0) { best = headerIdxs[i]; break; }
+          }
+          if (best < 0) best = headerIdxs[0];
+        }
+        return best;
+      };
+      var updateFocus = function () {
+        var kids = focusKids();
+        var headerIdxs = headerIdxList(kids);
+        if (!headerIdxs.length) {                 // no h2/h3 → keep all bright (never dim a headerless page)
+          kids.forEach(function (el) { el.classList.add("aris-in-focus"); });
+          return;
+        }
+        var best = activeHeaderIdx(kids, headerIdxs);
+        var next = kids.length;
+        for (var j = 0; j < headerIdxs.length; j++) {
+          if (headerIdxs[j] > best) { next = headerIdxs[j]; break; }
+        }
+        var introEnd = headerIdxs[0];  // header.hero + anything before first heading stays bright
+        kids.forEach(function (el, i) {
+          el.classList.toggle("aris-in-focus", (i < introEnd) || (i >= best && i < next));
+        });
+      };
+      var onFocusScroll = function () {
+        if (document.body.classList.contains("aris-focus-dim")) updateFocus();
+      };
+      var onFocusKeydown = function (e) {
+        var tg = e.target;
+        if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA" || tg.tagName === "SELECT" || tg.isContentEditable)) return;
+        if (e.key === "Escape") {
+          var popEl = document.getElementById("cite-pop");
+          if (popEl && !popEl.hidden) return;     // an open popover handles Esc first
+          setFocus(false);
+          return;
+        }
+        if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+        e.preventDefault();
+        var heads = [].slice.call(document.querySelectorAll("main h2, main h3"));
+        if (!heads.length) return;
+        var cur = 0, bestDist = Infinity;
+        heads.forEach(function (h, i) {
+          var d = Math.abs(h.getBoundingClientRect().top - 80);
+          if (d < bestDist) { bestDist = d; cur = i; }
+        });
+        var ni = e.key === "ArrowDown" ? Math.min(cur + 1, heads.length - 1) : Math.max(cur - 1, 0);
+        heads[ni].scrollIntoView({ behavior: "smooth", block: "start" });
+        showFocusHint((ni + 1) + " / " + heads.length + "　" + heads[ni].textContent.trim().slice(0, 24));
+      };
+      var setFocus = function (on) {
+        document.body.classList.toggle("aris-focus-dim", on);
+        focusBtn.classList.toggle("on", on);
+        focusBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        focusBtn.textContent = on ? "🎯 Focus ON" : "🎯 Focus";
+        if (on) {
+          window.addEventListener("scroll", onFocusScroll, { passive: true });
+          document.addEventListener("keydown", onFocusKeydown, true);    // capture phase: see an open popover before its bubble Esc handler (also: bound only while ON, guardrail 2)
+          if (typeof io2 !== "undefined" && io2) io2.disconnect();        // pause F7
+          updateFocus();
+          showFocusHint("Focus 模式：↑ / ↓ 切换小节，Esc 退出");
+        } else {
+          window.removeEventListener("scroll", onFocusScroll);
+          document.removeEventListener("keydown", onFocusKeydown, true);
+          focusKids().forEach(function (el) { el.classList.remove("aris-in-focus"); });
+          if (typeof io2 !== "undefined" && io2) h2s.forEach(function (h) { io2.observe(h); });  // resume F7
+        }
+      };
+      focusBtn.addEventListener("click", function () {
+        setFocus(!document.body.classList.contains("aris-focus-dim"));
+      });
     }
   }
 })();

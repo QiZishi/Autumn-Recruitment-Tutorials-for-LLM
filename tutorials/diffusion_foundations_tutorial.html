@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diffusion Foundations Tutorial</title>
+<title>Diffusion Foundations 面试 Cheat Sheet</title>
 
 <meta name="generator" content="ARIS render-html (academic, v1)">
-<meta name="aris:source-path" content="docs\tutorials\diffusion_foundations_tutorial.md">
+<meta name="aris:source-path" content="docs/tutorials/diffusion_foundations_tutorial.md">
 <meta name="aris:source-sha256" content="95c1efc6f929678361bb3b54ef684da7def546002107412458fd14673ebbef67">
-<meta name="aris:generated-at" content="2026-05-29 02:25 UTC">
+<meta name="aris:generated-at" content="2026-05-31 05:07 UTC">
 
 <!-- MathJax 3 -->
 <script>
@@ -90,9 +90,6 @@ nav.toc h3 {
 nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
 nav.toc ol li { margin: 5px 0; counter-increment: toc; }
 nav.toc ol li::before { content: counter(toc) ". "; color: var(--ink-muted); margin-right: 4px; }
-/* Only selected raw URLs should carry the blue link treatment. */
-a { color: inherit; text-decoration: none; }
-a:hover { color: inherit; }
 nav.toc a {
   color: var(--ink-soft);
   text-decoration: none;
@@ -160,32 +157,6 @@ header.hero .meta code {
   border: 1px solid var(--border-soft);
 }
 
-.home-link {
-  display: block;
-  margin: 0 0 18px;
-}
-.home-link a {
-  display: inline-block;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
-  border-bottom-color: #c8bba1;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500;
-  box-shadow:
-    0 1px 0 rgba(198, 184, 154, 0.85),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
-}
-.home-link a:hover {
-  color: var(--primary-soft);
-  border-color: #cdbf9e;
-  border-bottom-color: #b8a77f;
-  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
-}
-
 h2 {
   font-size: 24px;
   margin: 44px 0 14px;
@@ -195,7 +166,7 @@ h2 {
   font-weight: 700;
 }
 h2 .num { color: var(--primary); font-weight: 600; margin-right: 8px; }
-h3 { font-size: 19px; margin: 28px 0 10px; color: var(--ink); font-weight: 500; }
+h3 { font-size: 19px; margin: 28px 0 10px; color: var(--primary); font-weight: 600; }
 h4 { font-size: 16px; margin: 20px 0 8px; color: var(--ink); font-weight: 600; }
 
 p { margin: 10px 0; }
@@ -206,13 +177,8 @@ ul li::marker { color: var(--primary); }
 strong { color: var(--accent); font-weight: 600; }
 em { color: var(--ink-soft); }
 
-.selected-raw-url {
-  color: var(--primary);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-.selected-raw-url:hover { color: var(--primary-soft); }
+a { color: var(--primary); }
+a:hover { color: var(--accent); }
 
 code:not(.hljs) {
   font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
@@ -298,13 +264,6 @@ details.qa, details {
   border-radius: 6px;
   margin: 10px 0;
   padding: 0;
-}
-details.qa > :not(summary) {
-  padding: 12px 18px;
-}
-details.qa ol,
-details.qa ul {
-  padding-left: 24px;
 }
 details summary {
   cursor: pointer;
@@ -503,6 +462,82 @@ body.aris-blog h2.aris-active-h2 {
   padding-left: 12px;
   margin-left: -12px;
 }
+
+/* --- Focus-dim reading mode (B1) + floating toggle (B2) + ↑/↓ nav (B4) -----
+   Blog opt-in. Everything is scoped under body.aris-blog(.aris-focus-dim) so
+   the 46 non-blog tutorials are completely unaffected (no .aris-blog → button
+   hidden, dim rule never matches). While ON, dims every <main> child except
+   the current section and the intro (header.hero stays bright). F7's io2 is
+   paused while ON; the scroll listener is bound only while ON. */
+body.aris-blog.aris-focus-dim main > *:not(.aris-in-focus) {
+  opacity: 0.28;
+  transition: opacity 0.25s ease;
+}
+body.aris-blog.aris-focus-dim main > .aris-in-focus { opacity: 1; }
+.aris-focus-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 6px 13px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+body.aris-blog .aris-focus-toggle { display: inline-block; }
+.aris-focus-toggle:hover { color: var(--primary); }
+.aris-focus-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.aris-focus-hint {
+  position: fixed;
+  bottom: 18px;
+  right: 16px;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.aris-focus-hint.show { opacity: 1; }
+@media print {
+  .aris-focus-toggle, .aris-focus-hint { display: none !important; }
+  body.aris-focus-dim main > * { opacity: 1 !important; }
+}
+
+.home-link {
+  display: block;
+  margin: 0 0 18px;
+}
+.home-link a {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-bottom-color: #c8bba1;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow:
+    0 1px 0 rgba(198, 184, 154, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.home-link a:hover {
+  color: var(--primary-soft);
+  border-color: #cdbf9e;
+  border-bottom-color: #b8a77f;
+  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
+}
 </style>
 </head>
 <body class="">
@@ -638,14 +673,14 @@ body.aris-blog h2.aris-active-h2 {
 
 <main>
 <header class="hero">
-  
-  <h1>Diffusion Foundations Tutorial</h1>
-  
+  <div class="eyebrow">Interview Prep · Diffusion Generative Modeling</div>
+  <h1>Diffusion Foundations 面试 Cheat Sheet</h1>
+  <p class="subtitle">DDPM / Score / DDIM / EDM / CFG / Consistency Models · 公式推导 + From-Scratch 代码 + 25 高频题（L1 必会 · L2 进阶 · L3 顶级 lab）</p>
   
   <div class="meta">
-    <span><strong>Source:</strong> <code>docs\tutorials\diffusion_foundations_tutorial.md</code></span>
+    <span><strong>Source:</strong> <code>docs/tutorials/diffusion_foundations_tutorial.md</code></span>
     <span><strong>SHA256:</strong> <code>95c1efc6f929</code></span>
-    <span><strong>Rendered:</strong> 2026-05-29 02:25 UTC</span>
+    <span><strong>Rendered:</strong> 2026-05-31 05:07 UTC</span>
     
   </div>
 </header>
@@ -1416,9 +1451,9 @@ def pf_ode_sample_euler(eps_model, sched: DDPMSchedule, shape, device, num_steps
 
 <footer class="aris-footer">
   Generated by <a href="https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/blob/main/skills/render-html/SKILL.md">ARIS <code>/render-html</code></a> ·
-  source path <code>docs\tutorials\diffusion_foundations_tutorial.md</code> ·
+  source path <code>docs/tutorials/diffusion_foundations_tutorial.md</code> ·
   SHA256 <code>95c1efc6f929</code> ·
-  generated at 2026-05-29 02:25 UTC.
+  generated at 2026-05-31 05:07 UTC.
   This is a generated view — edit the source Markdown, then re-render.
 </footer>
 </main>
@@ -1628,6 +1663,122 @@ def pf_ode_sample_euler(eps_model, sched: DDPMSchedule, shape, device, num_steps
         });
       }, { rootMargin: "-15% 0px -75% 0px" });
       h2s.forEach(function (h) { io2.observe(h); });
+    }
+
+    // --- Feature 8: Focus-dim reading mode (B1) + floating toggle (B2) +
+    //     ↑/↓ section nav (B4). Built only inside this .aris-blog guard, so
+    //     non-blog tutorials never construct it. Default OFF. While ON:
+    //     dims non-current sections (h3-granular), keeps the intro bright,
+    //     pauses F7's io2, and binds a scroll listener (removed on OFF — no
+    //     new *persistent* global hook). Restores everything on OFF / print.
+    var mainEl = document.querySelector("main");
+    if (mainEl) {
+      var focusBtn = document.createElement("button");
+      focusBtn.className = "aris-focus-toggle";
+      focusBtn.type = "button";
+      focusBtn.setAttribute("aria-pressed", "false");
+      focusBtn.textContent = "🎯 Focus";
+      document.body.appendChild(focusBtn);
+
+      var focusHint = document.createElement("div");
+      focusHint.className = "aris-focus-hint";
+      document.body.appendChild(focusHint);
+      var hintTimer = null;
+      var showFocusHint = function (msg) {
+        focusHint.textContent = msg;
+        focusHint.classList.add("show");
+        if (hintTimer) clearTimeout(hintTimer);
+        hintTimer = setTimeout(function () { focusHint.classList.remove("show"); }, 1600);
+      };
+
+      var focusKids = function () { return [].slice.call(mainEl.children); };
+      var headerIdxList = function (kids) {
+        var idxs = [];
+        kids.forEach(function (el, i) {
+          if (el.tagName === "H2" || el.tagName === "H3") idxs.push(i);
+        });
+        return idxs;
+      };
+      // Deterministic current-section pick (no IntersectionObserver): the
+      // header whose top is closest to but above the viewport's 40% line;
+      // fallback = first header still below the line; then first header.
+      var activeHeaderIdx = function (kids, headerIdxs) {
+        var best = -1, bestTop = -Infinity, lineY = window.innerHeight * 0.4;
+        headerIdxs.forEach(function (idx) {
+          var top = kids[idx].getBoundingClientRect().top;
+          if (top < lineY && top > bestTop) { bestTop = top; best = idx; }
+        });
+        if (best < 0) {
+          for (var i = 0; i < headerIdxs.length; i++) {
+            if (kids[headerIdxs[i]].getBoundingClientRect().top >= 0) { best = headerIdxs[i]; break; }
+          }
+          if (best < 0) best = headerIdxs[0];
+        }
+        return best;
+      };
+      var updateFocus = function () {
+        var kids = focusKids();
+        var headerIdxs = headerIdxList(kids);
+        if (!headerIdxs.length) {                 // no h2/h3 → keep all bright (never dim a headerless page)
+          kids.forEach(function (el) { el.classList.add("aris-in-focus"); });
+          return;
+        }
+        var best = activeHeaderIdx(kids, headerIdxs);
+        var next = kids.length;
+        for (var j = 0; j < headerIdxs.length; j++) {
+          if (headerIdxs[j] > best) { next = headerIdxs[j]; break; }
+        }
+        var introEnd = headerIdxs[0];  // header.hero + anything before first heading stays bright
+        kids.forEach(function (el, i) {
+          el.classList.toggle("aris-in-focus", (i < introEnd) || (i >= best && i < next));
+        });
+      };
+      var onFocusScroll = function () {
+        if (document.body.classList.contains("aris-focus-dim")) updateFocus();
+      };
+      var onFocusKeydown = function (e) {
+        var tg = e.target;
+        if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA" || tg.tagName === "SELECT" || tg.isContentEditable)) return;
+        if (e.key === "Escape") {
+          var popEl = document.getElementById("cite-pop");
+          if (popEl && !popEl.hidden) return;     // an open popover handles Esc first
+          setFocus(false);
+          return;
+        }
+        if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+        e.preventDefault();
+        var heads = [].slice.call(document.querySelectorAll("main h2, main h3"));
+        if (!heads.length) return;
+        var cur = 0, bestDist = Infinity;
+        heads.forEach(function (h, i) {
+          var d = Math.abs(h.getBoundingClientRect().top - 80);
+          if (d < bestDist) { bestDist = d; cur = i; }
+        });
+        var ni = e.key === "ArrowDown" ? Math.min(cur + 1, heads.length - 1) : Math.max(cur - 1, 0);
+        heads[ni].scrollIntoView({ behavior: "smooth", block: "start" });
+        showFocusHint((ni + 1) + " / " + heads.length + "　" + heads[ni].textContent.trim().slice(0, 24));
+      };
+      var setFocus = function (on) {
+        document.body.classList.toggle("aris-focus-dim", on);
+        focusBtn.classList.toggle("on", on);
+        focusBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        focusBtn.textContent = on ? "🎯 Focus ON" : "🎯 Focus";
+        if (on) {
+          window.addEventListener("scroll", onFocusScroll, { passive: true });
+          document.addEventListener("keydown", onFocusKeydown, true);    // capture phase: see an open popover before its bubble Esc handler (also: bound only while ON, guardrail 2)
+          if (typeof io2 !== "undefined" && io2) io2.disconnect();        // pause F7
+          updateFocus();
+          showFocusHint("Focus 模式：↑ / ↓ 切换小节，Esc 退出");
+        } else {
+          window.removeEventListener("scroll", onFocusScroll);
+          document.removeEventListener("keydown", onFocusKeydown, true);
+          focusKids().forEach(function (el) { el.classList.remove("aris-in-focus"); });
+          if (typeof io2 !== "undefined" && io2) h2s.forEach(function (h) { io2.observe(h); });  // resume F7
+        }
+      };
+      focusBtn.addEventListener("click", function () {
+        setFocus(!document.body.classList.contains("aris-focus-dim"));
+      });
     }
   }
 })();

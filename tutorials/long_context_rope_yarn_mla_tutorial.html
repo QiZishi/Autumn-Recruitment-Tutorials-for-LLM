@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Long Context Rope Yarn Mla Tutorial</title>
+<title>Long Context: RoPE / YaRN / NTK / MLA / Sliding Window 面试 Cheat Sheet</title>
 
 <meta name="generator" content="ARIS render-html (academic, v1)">
-<meta name="aris:source-path" content="docs\tutorials\long_context_rope_yarn_mla_tutorial.md">
-<meta name="aris:source-sha256" content="cf9958df2aff90f900727a9cd8fa0b82b5b5cb28354087aa59f52b9b62e6c24d">
-<meta name="aris:generated-at" content="2026-05-29 02:25 UTC">
+<meta name="aris:source-path" content="docs/tutorials/long_context_rope_yarn_mla_tutorial.md">
+<meta name="aris:source-sha256" content="08d2eab9c93e8801b2518541f3b12b40ffdfc6127d7745b3e3240d4d5b949cdc">
+<meta name="aris:generated-at" content="2026-05-31 06:07 UTC">
 
 <!-- MathJax 3 -->
 <script>
@@ -90,9 +90,6 @@ nav.toc h3 {
 nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
 nav.toc ol li { margin: 5px 0; counter-increment: toc; }
 nav.toc ol li::before { content: counter(toc) ". "; color: var(--ink-muted); margin-right: 4px; }
-/* Only selected raw URLs should carry the blue link treatment. */
-a { color: inherit; text-decoration: none; }
-a:hover { color: inherit; }
 nav.toc a {
   color: var(--ink-soft);
   text-decoration: none;
@@ -160,32 +157,6 @@ header.hero .meta code {
   border: 1px solid var(--border-soft);
 }
 
-.home-link {
-  display: block;
-  margin: 0 0 18px;
-}
-.home-link a {
-  display: inline-block;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
-  border-bottom-color: #c8bba1;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500;
-  box-shadow:
-    0 1px 0 rgba(198, 184, 154, 0.85),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
-}
-.home-link a:hover {
-  color: var(--primary-soft);
-  border-color: #cdbf9e;
-  border-bottom-color: #b8a77f;
-  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
-}
-
 h2 {
   font-size: 24px;
   margin: 44px 0 14px;
@@ -195,7 +166,7 @@ h2 {
   font-weight: 700;
 }
 h2 .num { color: var(--primary); font-weight: 600; margin-right: 8px; }
-h3 { font-size: 19px; margin: 28px 0 10px; color: var(--ink); font-weight: 500; }
+h3 { font-size: 19px; margin: 28px 0 10px; color: var(--primary); font-weight: 600; }
 h4 { font-size: 16px; margin: 20px 0 8px; color: var(--ink); font-weight: 600; }
 
 p { margin: 10px 0; }
@@ -206,13 +177,8 @@ ul li::marker { color: var(--primary); }
 strong { color: var(--accent); font-weight: 600; }
 em { color: var(--ink-soft); }
 
-.selected-raw-url {
-  color: var(--primary);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-.selected-raw-url:hover { color: var(--primary-soft); }
+a { color: var(--primary); }
+a:hover { color: var(--accent); }
 
 code:not(.hljs) {
   font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
@@ -298,13 +264,6 @@ details.qa, details {
   border-radius: 6px;
   margin: 10px 0;
   padding: 0;
-}
-details.qa > :not(summary) {
-  padding: 12px 18px;
-}
-details.qa ol,
-details.qa ul {
-  padding-left: 24px;
 }
 details summary {
   cursor: pointer;
@@ -503,6 +462,82 @@ body.aris-blog h2.aris-active-h2 {
   padding-left: 12px;
   margin-left: -12px;
 }
+
+/* --- Focus-dim reading mode (B1) + floating toggle (B2) + ↑/↓ nav (B4) -----
+   Blog opt-in. Everything is scoped under body.aris-blog(.aris-focus-dim) so
+   the 46 non-blog tutorials are completely unaffected (no .aris-blog → button
+   hidden, dim rule never matches). While ON, dims every <main> child except
+   the current section and the intro (header.hero stays bright). F7's io2 is
+   paused while ON; the scroll listener is bound only while ON. */
+body.aris-blog.aris-focus-dim main > *:not(.aris-in-focus) {
+  opacity: 0.28;
+  transition: opacity 0.25s ease;
+}
+body.aris-blog.aris-focus-dim main > .aris-in-focus { opacity: 1; }
+.aris-focus-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 6px 13px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+body.aris-blog .aris-focus-toggle { display: inline-block; }
+.aris-focus-toggle:hover { color: var(--primary); }
+.aris-focus-toggle.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.aris-focus-hint {
+  position: fixed;
+  bottom: 18px;
+  right: 16px;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.aris-focus-hint.show { opacity: 1; }
+@media print {
+  .aris-focus-toggle, .aris-focus-hint { display: none !important; }
+  body.aris-focus-dim main > * { opacity: 1 !important; }
+}
+
+.home-link {
+  display: block;
+  margin: 0 0 18px;
+}
+.home-link a {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-bottom-color: #c8bba1;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #faf8ef 0%, #f2eddc 100%);
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow:
+    0 1px 0 rgba(198, 184, 154, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.home-link a:hover {
+  color: var(--primary-soft);
+  border-color: #cdbf9e;
+  border-bottom-color: #b8a77f;
+  background: linear-gradient(180deg, #fcfaf2 0%, #f4efdf 100%);
+}
 </style>
 </head>
 <body class="">
@@ -562,7 +597,7 @@ body.aris-blog h2.aris-active-h2 {
 </li>
 <li><a href="#8-abf-与-nope--两种非主流扩展">§8 ABF 与 NoPE — 两种&quot;非主流&quot;扩展</a>
 <ul>
-<li><a href="#81-abf--adjusted-base-frequency-xiong-et-al-2023-meta">8.1 ABF — Adjusted Base Frequency (Xiong et al. 2023, Meta)</a></li>
+<li><a href="#81-abf--adjusted-base-frequency-xiong-et-al-effective-long-context-scaling-of-foundation-models-arxiv230916039-naacl-2024-meta">8.1 ABF — Adjusted Base Frequency (Xiong et al., &quot;Effective Long-Context Scaling of Foundation Models&quot;, arXiv:2309.16039, NAACL 2024, Meta)</a></li>
 <li><a href="#82-nope--no-position-encoding">8.2 NoPE — No Position Encoding</a></li>
 </ul>
 </li>
@@ -623,14 +658,14 @@ body.aris-blog h2.aris-active-h2 {
 
 <main>
 <header class="hero">
-  
-  <h1>Long Context Rope Yarn Mla Tutorial</h1>
-  
+  <div class="eyebrow">Interview Prep · Long Context / Position Encoding</div>
+  <h1>Long Context: RoPE / YaRN / NTK / MLA / Sliding Window 面试 Cheat Sheet</h1>
+  <p class="subtitle">公式推导 + From-Scratch 代码 + 25 高频题（L1 必会 · L2 进阶 · L3 顶级 lab）</p>
   
   <div class="meta">
-    <span><strong>Source:</strong> <code>docs\tutorials\long_context_rope_yarn_mla_tutorial.md</code></span>
-    <span><strong>SHA256:</strong> <code>cf9958df2aff</code></span>
-    <span><strong>Rendered:</strong> 2026-05-29 02:25 UTC</span>
+    <span><strong>Source:</strong> <code>docs/tutorials/long_context_rope_yarn_mla_tutorial.md</code></span>
+    <span><strong>SHA256:</strong> <code>08d2eab9c93e</code></span>
+    <span><strong>Rendered:</strong> 2026-05-31 06:07 UTC</span>
     
   </div>
 </header>
@@ -663,6 +698,7 @@ body.aris-blog h2.aris-active-h2 {
 <p>这种 <strong>几何级数频率分布</strong> 与 Vaswani 2017 sinusoidal PE 相同（不是巧合：sinusoidal PE 也是 $10000^{-2i/d}$），让模型在多个时间尺度上同时分辨位置。</p>
 <div class="callout callout-info"><div class="callout-title">波长 vs 训练上下文</div><p>维度 $i$ 的波长 $\lambda_i = 2\pi b^{2i/d}$。当 $\lambda_i$ <strong>超过训练长度</strong> $L$ 时，这个维度在训练中没见过完整周期——这就是 NTK-by-parts 的关键观察：低频维度的相位插值很危险（外推时进入未见区域），高频维度安全。</p></div>
 <h3 id="24-from-scratch-rope-代码">2.4 from-scratch RoPE 代码</h3>
+<div class="callout callout-info"><div class="callout-title">说明</div><p>后续所有 Python 代码块共享本块的 import 前导（<code>import torch</code> 等）；单独复制运行某个后续块时需自行补上 <code>import torch</code>。</p></div>
 <pre><code class="language-python">import torch
 
 def precompute_rope_cache(seq_len: int, dim: int, base: float = 10000.0, device=None):
@@ -856,7 +892,7 @@ def precompute_rope_cache_yarn(
 <table><thead><tr><th>方法</th><th>缩放粒度</th><th>Fine-tune 需求</th><th>最大上下文</th></tr></thead><tbody><tr><td>PI</td><td>全维度同 $1/s$</td><td>是 (≥ 1000 步)</td><td>32K</td></tr><tr><td>NTK-aware</td><td>渐变 (单参 $\alpha$)</td><td>否 (zero-shot)</td><td>16K</td></tr><tr><td>YaRN</td><td>三段 ramp (固定 $\alpha, \beta$)</td><td>是 (≈ 400 步)</td><td>128K</td></tr><tr><td>LongRoPE</td><td><strong>每维独立</strong></td><td>是 (≈ 400 步)</td><td><strong>2M</strong></td></tr></tbody></table>
 <div class="callout callout-info"><div class="callout-title">Short-context rescue 的意义</div><p>直接套用 long-context 缩放会让模型在短上下文（如 1K-4K，覆盖大多数实际用例）上变差。LongRoPE 在推理时根据当前 batch 的实际长度切换缩放表，是工业级长上下文模型的常见技巧（DeepSeek-V2 / Qwen2.5 / Llama-3.1 也有类似 dual-table 设计）。</p></div>
 <h2 id="8-abf-与-nope--两种非主流扩展">§8 ABF 与 NoPE — 两种"非主流"扩展</h2>
-<h3 id="81-abf--adjusted-base-frequency-xiong-et-al-2023-meta">8.1 ABF — Adjusted Base Frequency (Xiong et al. 2023, Meta)</h3>
+<h3 id="81-abf--adjusted-base-frequency-xiong-et-al-effective-long-context-scaling-of-foundation-models-arxiv230916039-naacl-2024-meta">8.1 ABF — Adjusted Base Frequency (Xiong et al., "Effective Long-Context Scaling of Foundation Models", arXiv:2309.16039, NAACL 2024, Meta)</h3>
 <p>最朴素的"换底"——直接把 RoPE 底从 10000 改大（如 500000）。等价于全维度同步 NTK-aware 缩放，但不用考虑 ramp。</p>
 <ul><li><strong>优点</strong>：最简单，1 行配置改动。</li><li><strong>缺点</strong>：$\theta_0 = (b')^0 = 1$ 同样不变（与 NTK-aware 一致，最高频被精确保留），但 ABF 的 $b'$ 是凭经验拍出来的（如 $10^6$），<strong>没有按训练长度比例校准</strong>——不像 NTK-aware 那样让最低频精确压到 $1/s$。结果：低频维度的相位压缩力度全凭手感。</li><li><strong>用在哪</strong>：CodeLlama 用 $b = 10^6$ 扩到 16K；Llama-3 / Llama-3.1 沿用大 base 加上更精细的 RoPE scaling。</li></ul>
 <h3 id="82-nope--no-position-encoding">8.2 NoPE — No Position Encoding</h3>
@@ -1063,7 +1099,7 @@ def streaming_decode(model, input_ids, max_new_tokens,
         generated.append(next_token)
 
     return torch.cat(generated, dim=-1)</code></pre>
-<div class="callout callout-warn"><div class="callout-title">Warning</div><p>**直接裁剪 <em>RoPE 之后</em> 的 K cache 是错的<strong> — 一个常见 bug：把 HF 默认的 K cache（已 RoPE）直接按上面的方式裁剪 + 用逻辑位置 id 喂新 token，会得到自相矛盾的相对位置（cache 中的 K 用原始绝对位置旋转过，但新 query 用逻辑位置旋转）。</strong>正确做法**：保留未旋转的 K（<code>W_K @ h</code>，未乘 cos/sin），每步根据当前逻辑位置重新做 RoPE；或者用作者 repo 提供的 <code>enable_streaming_llm()</code> patch，它修改了 attention layer 以接受 "position-shift" 形式的旋转。</p></div>
+<div class="callout callout-warn"><div class="callout-title">直接裁剪 RoPE 之后的 K cache 是错的</div><p>一个常见 bug：把 HF 默认的 K cache（已 RoPE）直接按上面的方式裁剪 + 用逻辑位置 id 喂新 token，会得到自相矛盾的相对位置（cache 中的 K 用原始绝对位置旋转过，但新 query 用逻辑位置旋转）。<strong>正确做法</strong>：保留未旋转的 K（<code>W_K @ h</code>，未乘 cos/sin），每步根据当前逻辑位置重新做 RoPE；或者用作者 repo 提供的 <code>enable_streaming_llm()</code> patch，它修改了 attention layer 以接受 "position-shift" 形式的旋转。</p></div>
 <div class="callout callout-warn"><div class="callout-title">StreamingLLM 不增加模型有效上下文</div><p>它让模型可以<strong>永久流式生成</strong>而不爆显存，但实际能看到的还是 sink + window 范围内的 token。中间被丢弃的内容<strong>真的看不到了</strong>。要长上下文检索能力还是得依赖 YaRN / LongRoPE / SSM 等真正的上下文扩展。</p></div>
 <h3 id="104-lost-in-the-middle-liu-2023">10.4 Lost-in-the-Middle (Liu 2023)</h3>
 <p>Liu et al. 2023 ("Lost in the Middle: How Language Models Use Long Contexts") 经验观察：<strong>长上下文模型对 prompt 头部和尾部的关注度远高于中间</strong>，造成"中间内容更难被检索到"。</p>
@@ -1097,7 +1133,7 @@ def streaming_decode(model, input_ids, max_new_tokens,
 <table><thead><tr><th>方法</th><th>总 cache 大小（元素）</th><th>与 vanilla cache 对比（同 attention 变体下）</th></tr></thead><tbody><tr><td><strong>Vanilla (整段序列)</strong></td><td>$L \cdot 2 N_h d_h$</td><td>基准 1×</td></tr><tr><td><strong>SWA (window=W)</strong></td><td>$W \cdot 2 N_h d_h$（每层只看 W 个最近 token）</td><td>$W/L \times$</td></tr><tr><td><strong>Streaming (sink+win)</strong></td><td>$(S + W) \cdot 2 N_h d_h$（常数, 与 L 解耦）</td><td>$(S{+}W)/L \times$</td></tr></tbody></table>
 <p>注：SWA / Streaming 与 GQA / MLA 是<strong>正交</strong>的——两者乘起来即得到工业级 stack 的实际 cache 大小。</p>
 <h3 id="123-attention-时间与显存">12.3 Attention 时间与显存</h3>
-<table><thead><tr><th>方法</th><th>Time per token (decode)</th><th>Memory peak (prefill)</th></tr></thead><tbody><tr><td>Vanilla MHA</td><td>$O(L \cdot N_h d_h)$</td><td>$O(L^2)$ scores</td></tr><tr><td>FlashAttention</td><td>$O(L \cdot N_h d_h)$</td><td>$O(L)$（无中间 scores）</td></tr><tr><td>Sliding Window</td><td>$O(W \cdot N_h d_h)$</td><td>$O(L \cdot W)$</td></tr><tr><td>Streaming (S+W)</td><td>$O((S+W) \cdot N_h d_h)$</td><td>$O((S+W)^2)$</td></tr><tr><td>Ring (P GPU)</td><td>$O(L \cdot N_h d_h / P)$ per GPU</td><td>$O(L^2 / P)$ per GPU</td></tr><tr><td>MLA</td><td>$O(L \cdot (d_c + d_h^R))$</td><td>+ 投影开销</td></tr></tbody></table>
+<table><thead><tr><th>方法</th><th>Time per token (decode)</th><th>Memory peak (prefill)</th></tr></thead><tbody><tr><td>Vanilla MHA</td><td>$O(L \cdot N_h d_h)$</td><td>$O(L^2)$ scores</td></tr><tr><td>FlashAttention</td><td>$O(L \cdot N_h d_h)$</td><td>$O(L)$（无中间 scores）</td></tr><tr><td>Sliding Window</td><td>$O(W \cdot N_h d_h)$</td><td>$O(L \cdot W)$</td></tr><tr><td>Streaming (S+W)</td><td>$O((S+W) \cdot N_h d_h)$</td><td>$O((S+W)^2)$</td></tr><tr><td>Ring (P GPU)</td><td>$O(L \cdot N_h d_h / P)$ per GPU</td><td>$O(L^2 / P)$ per GPU</td></tr><tr><td>MLA</td><td>$O(L \cdot N_h (d_c + d_h^R))$</td><td>+ 投影开销</td></tr></tbody></table>
 <h2 id="13-综合对比与选型决策树">§13 综合对比与选型决策树</h2>
 <pre class="diagram"><code>Q: 我要把上下文从 4K 推到 N tokens, N=?
 │
@@ -1303,13 +1339,13 @@ Q: Attention 算不动 (L^2 太大)?
 <ul><li>Sink size $S = 4$ 经验最优（前 4 个 token）</li><li>Window size $W$ 选择：吞吐 vs 质量权衡，常用 $W \in [1024, 4096]$</li><li>Position ID 必须用<strong>逻辑位置</strong>而非绝对位置</li><li>与 RoPE / YaRN 兼容；按 §10.3 的做法 cache 应存 <em>RoPE 之前</em> 的 K，每次 forward 根据 sink / window 内 token 的<strong>当前逻辑位置</strong>重新施加 RoPE（部分 vendor 实现会把 sink 段当作"固定旋转 + 平移 attention key 索引"等价处理，效果近似）</li></ul>
 <h3 id="a4-速查表">A.4 速查表</h3>
 <table><thead><tr><th>上下文</th><th>推荐方案</th><th>KV cache 优化</th></tr></thead><tbody><tr><td>4K-16K</td><td>RoPE + ABF / NTK-aware (zero-shot)</td><td>GQA</td></tr><tr><td>16K-32K</td><td>PI / YaRN + fine-tune</td><td>GQA</td></tr><tr><td>32K-128K</td><td>YaRN + fine-tune</td><td>GQA / MLA</td></tr><tr><td>128K-2M</td><td>LongRoPE + fine-tune</td><td>MLA + Ring/CP</td></tr><tr><td>流式生成</td><td>StreamingLLM (sink + window)</td><td>任何，cache 常数大小</td></tr></tbody></table>
-<p><strong>Long Context Quick Reference</strong> · 主要参考：Su et al. 2021/2024 (RoPE/RoFormer, Neurocomputing), Chen et al. 2023 (PI, arXiv:2306.15595, Meta), bloc97 / jquesnelle 2023 (NTK-aware, LocalLLaMA community), Peng et al. 2023 (YaRN, arXiv:2309.00071), Ding et al. 2024 (LongRoPE, ICML 2024, Microsoft), DeepSeek-AI 2024 (DeepSeek-V2, arXiv:2405.04434), Jiang et al. 2023 (Mistral 7B, arXiv:2310.06825), Xiao et al. 2024 (StreamingLLM, ICLR 2024), Nelson F. Liu et al. 2023 (Lost in the Middle, arXiv:2307.03172, TACL), Hao Liu et al. 2023 (Ring Attention, arXiv:2310.01889), Dao et al. 2022-2024 (FlashAttention 1/2/3)</p>
+<p><strong>Long Context Quick Reference</strong> · 主要参考：Su et al. 2021/2024 (RoPE/RoFormer, Neurocomputing), Chen et al. 2023 (PI, arXiv:2306.15595, Meta), bloc97 / jquesnelle 2023 (NTK-aware, LocalLLaMA community), Peng et al. 2023 (YaRN, arXiv:2309.00071), Ding et al. 2024 (LongRoPE, ICML 2024, Microsoft), DeepSeek-AI 2024 (DeepSeek-V2, arXiv:2405.04434), Jiang et al. 2023 (Mistral 7B, arXiv:2310.06825), Xiao et al. 2024 (StreamingLLM, ICLR 2024), Nelson F. Liu et al. (Lost in the Middle, arXiv:2307.03172, arXiv 2023 / TACL 2024), Hao Liu et al. 2023 (Ring Attention, arXiv:2310.01889), Dao et al. 2022-2024 (FlashAttention 1/2/3)</p>
 
 <footer class="aris-footer">
   Generated by <a href="https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep/blob/main/skills/render-html/SKILL.md">ARIS <code>/render-html</code></a> ·
-  source path <code>docs\tutorials\long_context_rope_yarn_mla_tutorial.md</code> ·
-  SHA256 <code>cf9958df2aff</code> ·
-  generated at 2026-05-29 02:25 UTC.
+  source path <code>docs/tutorials/long_context_rope_yarn_mla_tutorial.md</code> ·
+  SHA256 <code>08d2eab9c93e</code> ·
+  generated at 2026-05-31 06:07 UTC.
   This is a generated view — edit the source Markdown, then re-render.
 </footer>
 </main>
@@ -1519,6 +1555,122 @@ Q: Attention 算不动 (L^2 太大)?
         });
       }, { rootMargin: "-15% 0px -75% 0px" });
       h2s.forEach(function (h) { io2.observe(h); });
+    }
+
+    // --- Feature 8: Focus-dim reading mode (B1) + floating toggle (B2) +
+    //     ↑/↓ section nav (B4). Built only inside this .aris-blog guard, so
+    //     non-blog tutorials never construct it. Default OFF. While ON:
+    //     dims non-current sections (h3-granular), keeps the intro bright,
+    //     pauses F7's io2, and binds a scroll listener (removed on OFF — no
+    //     new *persistent* global hook). Restores everything on OFF / print.
+    var mainEl = document.querySelector("main");
+    if (mainEl) {
+      var focusBtn = document.createElement("button");
+      focusBtn.className = "aris-focus-toggle";
+      focusBtn.type = "button";
+      focusBtn.setAttribute("aria-pressed", "false");
+      focusBtn.textContent = "🎯 Focus";
+      document.body.appendChild(focusBtn);
+
+      var focusHint = document.createElement("div");
+      focusHint.className = "aris-focus-hint";
+      document.body.appendChild(focusHint);
+      var hintTimer = null;
+      var showFocusHint = function (msg) {
+        focusHint.textContent = msg;
+        focusHint.classList.add("show");
+        if (hintTimer) clearTimeout(hintTimer);
+        hintTimer = setTimeout(function () { focusHint.classList.remove("show"); }, 1600);
+      };
+
+      var focusKids = function () { return [].slice.call(mainEl.children); };
+      var headerIdxList = function (kids) {
+        var idxs = [];
+        kids.forEach(function (el, i) {
+          if (el.tagName === "H2" || el.tagName === "H3") idxs.push(i);
+        });
+        return idxs;
+      };
+      // Deterministic current-section pick (no IntersectionObserver): the
+      // header whose top is closest to but above the viewport's 40% line;
+      // fallback = first header still below the line; then first header.
+      var activeHeaderIdx = function (kids, headerIdxs) {
+        var best = -1, bestTop = -Infinity, lineY = window.innerHeight * 0.4;
+        headerIdxs.forEach(function (idx) {
+          var top = kids[idx].getBoundingClientRect().top;
+          if (top < lineY && top > bestTop) { bestTop = top; best = idx; }
+        });
+        if (best < 0) {
+          for (var i = 0; i < headerIdxs.length; i++) {
+            if (kids[headerIdxs[i]].getBoundingClientRect().top >= 0) { best = headerIdxs[i]; break; }
+          }
+          if (best < 0) best = headerIdxs[0];
+        }
+        return best;
+      };
+      var updateFocus = function () {
+        var kids = focusKids();
+        var headerIdxs = headerIdxList(kids);
+        if (!headerIdxs.length) {                 // no h2/h3 → keep all bright (never dim a headerless page)
+          kids.forEach(function (el) { el.classList.add("aris-in-focus"); });
+          return;
+        }
+        var best = activeHeaderIdx(kids, headerIdxs);
+        var next = kids.length;
+        for (var j = 0; j < headerIdxs.length; j++) {
+          if (headerIdxs[j] > best) { next = headerIdxs[j]; break; }
+        }
+        var introEnd = headerIdxs[0];  // header.hero + anything before first heading stays bright
+        kids.forEach(function (el, i) {
+          el.classList.toggle("aris-in-focus", (i < introEnd) || (i >= best && i < next));
+        });
+      };
+      var onFocusScroll = function () {
+        if (document.body.classList.contains("aris-focus-dim")) updateFocus();
+      };
+      var onFocusKeydown = function (e) {
+        var tg = e.target;
+        if (tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA" || tg.tagName === "SELECT" || tg.isContentEditable)) return;
+        if (e.key === "Escape") {
+          var popEl = document.getElementById("cite-pop");
+          if (popEl && !popEl.hidden) return;     // an open popover handles Esc first
+          setFocus(false);
+          return;
+        }
+        if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+        e.preventDefault();
+        var heads = [].slice.call(document.querySelectorAll("main h2, main h3"));
+        if (!heads.length) return;
+        var cur = 0, bestDist = Infinity;
+        heads.forEach(function (h, i) {
+          var d = Math.abs(h.getBoundingClientRect().top - 80);
+          if (d < bestDist) { bestDist = d; cur = i; }
+        });
+        var ni = e.key === "ArrowDown" ? Math.min(cur + 1, heads.length - 1) : Math.max(cur - 1, 0);
+        heads[ni].scrollIntoView({ behavior: "smooth", block: "start" });
+        showFocusHint((ni + 1) + " / " + heads.length + "　" + heads[ni].textContent.trim().slice(0, 24));
+      };
+      var setFocus = function (on) {
+        document.body.classList.toggle("aris-focus-dim", on);
+        focusBtn.classList.toggle("on", on);
+        focusBtn.setAttribute("aria-pressed", on ? "true" : "false");
+        focusBtn.textContent = on ? "🎯 Focus ON" : "🎯 Focus";
+        if (on) {
+          window.addEventListener("scroll", onFocusScroll, { passive: true });
+          document.addEventListener("keydown", onFocusKeydown, true);    // capture phase: see an open popover before its bubble Esc handler (also: bound only while ON, guardrail 2)
+          if (typeof io2 !== "undefined" && io2) io2.disconnect();        // pause F7
+          updateFocus();
+          showFocusHint("Focus 模式：↑ / ↓ 切换小节，Esc 退出");
+        } else {
+          window.removeEventListener("scroll", onFocusScroll);
+          document.removeEventListener("keydown", onFocusKeydown, true);
+          focusKids().forEach(function (el) { el.classList.remove("aris-in-focus"); });
+          if (typeof io2 !== "undefined" && io2) h2s.forEach(function (h) { io2.observe(h); });  // resume F7
+        }
+      };
+      focusBtn.addEventListener("click", function () {
+        setFocus(!document.body.classList.contains("aris-focus-dim"));
+      });
     }
   }
 })();
