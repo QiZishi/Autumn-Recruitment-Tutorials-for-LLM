@@ -512,7 +512,6 @@ body.aris-blog .aris-focus-toggle { display: inline-block; }
   .aris-focus-toggle, .aris-focus-hint { display: none !important; }
   body.aris-focus-dim main > * { opacity: 1 !important; }
 }
-
 .home-link {
   display: block;
   margin: 0 0 18px;
@@ -1125,7 +1124,7 @@ def speculative_decode(target, draft, prompt_ids, max_new_tokens, K=4, temperatu
 <ol><li>抛弃 feature regression，<strong>直接 token prediction</strong>（feature 误差累积是瓶颈）</li><li>用 <strong>多层 feature fusion</strong> 而非只用 top layer</li><li><strong>Training-Time Test</strong>（TTT）：训练时模拟 inference 时的 draft chain 误差，避免 train-test gap</li><li>在 Vicuna-7B 上 4-5× 加速，比 EAGLE-2 进一步提升 ~30%</li></ol>
 <div class="callout callout-warn"><div class="callout-title">EAGLE 系列的训练成本</div><p>虽然 draft 模型很小（1 层 transformer，参数量约几十 M），但要在 target 模型的特征上重新训练，需要 target 模型的 forward pass dataset（蒸馏式）。一次 EAGLE-3 训练几小时到几天，不是免费的。</p></div>
 <h3 id="84-lookahead-decodingjacobi-迭代">8.4　Lookahead Decoding：Jacobi 迭代</h3>
-<p><strong>Jacobi 视角</strong>（Fu et al., ICML 2024）：自回归生成等价于解非线性方程组 $x_i = f(x_{<i})$ for $i=1..L$；可以用 Jacobi 迭代并行更新所有位置。</p>
+<p><strong>Jacobi 视角</strong>（Fu et al., ICML 2024）：自回归生成等价于解非线性方程组 $x_i = f(x_{\lt i})$ for $i=1..L$；可以用 Jacobi 迭代并行更新所有位置。</p>
 <pre><code>Step 0:  x = [&lt;random&gt;, &lt;random&gt;, ..., &lt;random&gt;]
 Step 1:  x&#x27;_i = f(x_{&lt;i})  ∀ i  并行
 Step 2:  x = x&#x27;，再来一轮

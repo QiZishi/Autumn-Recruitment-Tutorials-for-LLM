@@ -512,7 +512,6 @@ body.aris-blog .aris-focus-toggle { display: inline-block; }
   .aris-focus-toggle, .aris-focus-hint { display: none !important; }
   body.aris-focus-dim main > * { opacity: 1 !important; }
 }
-
 .home-link {
   display: block;
   margin: 0 0 18px;
@@ -823,7 +822,7 @@ def vae_loss(x: torch.Tensor, logits: torch.Tensor, mu: torch.Tensor,
 <div class="callout callout-info"><div class="callout-title">Tradeoff</div><p>IWAE 让 likelihood bound 更紧，但 encoder 学到的 posterior 不再追求"逼近真后验"，转去配合 importance weighting 的几何。对下游 representation learning 不一定更好。</p></div>
 <h3 id="43-nvaehierarchical-vaevahdat--kautz-neurips-2020">4.3　NVAE：Hierarchical VAE（Vahdat &amp; Kautz, NeurIPS 2020）</h3>
 <p>多层 latent $z = (z_1, z_2, \ldots, z_L)$，每层依赖前层：</p>
-<p>$$p(z) = p(z_1)\prod_{l=2}^L p(z_l | z_{<l}), \quad q(z|x) = q(z_1|x)\prod_{l=2}^L q(z_l | z_{<l}, x)$$</p>
+<p>$$p(z) = p(z_1)\prod_{l=2}^L p(z_l | z_{\lt l}), \quad q(z|x) = q(z_1|x)\prod_{l=2}^L q(z_l | z_{\lt l}, x)$$</p>
 <p>工程要点：</p>
 <ul><li><strong>Residual normal</strong> 参数化：$q(z_l|\cdot) = \mathcal{N}(\mu_p + \Delta\mu_q, \sigma_p \cdot \Delta\sigma_q)$，让 posterior 偏离 prior 是小量</li><li><strong>Spectral regularization</strong> 控制每层 KL，避免数值不稳</li><li><strong>BN + Swish + depthwise</strong> 等架构调优</li><li>在 CIFAR-10 / CelebA / FFHQ 上<strong>第一个把 VAE 的 NLL 推到接近 SOTA flow / autoregressive</strong></li></ul>
 <p>NVAE 现在的角色：<strong>LDM 之前最强连续 VAE prior 之一</strong>，但被 diffusion 系列在 sample 质量上反超。</p>
@@ -1026,7 +1025,7 @@ def vqvae_loss(x, x_hat, vq_loss):
 <p>$$\mathcal{L}_G = \mathcal{L}_\text{rec} + \mathcal{L}_\text{VQ} + \lambda \cdot \mathcal{L}_\text{GAN}^{(G)}$$</p>
 <h3 id="73-stage-2transformer-prior">7.3　Stage 2：Transformer Prior</h3>
 <p>Stage 1 训好 VQ-GAN，把图像转成 token grid $\mathbf{c} = (c_1, \ldots, c_{HW})$（行扫描展平）。Stage 2 在 token sequence 上训 <strong>decoder-only Transformer</strong>，标准 AR：</p>
-<p>$$p(\mathbf{c}) = \prod_{i=1}^{HW} p(c_i | c_{<i})$$</p>
+<p>$$p(\mathbf{c}) = \prod_{i=1}^{HW} p(c_i | c_{\lt i})$$</p>
 <p>采样：AR sample tokens → VQ-GAN decoder → image。这是把"图像生成"翻译成"语言模型"的标准范式，DALL·E / Parti / Muse 都是这一思想的进化。</p>
 <div class="callout callout-info"><div class="callout-title">VQ-GAN 在 LDM 中的角色</div><p>Stable Diffusion 的 <strong>VAE tokenizer</strong> 实际是 <strong>KL-regularized VQ-GAN 的连续 latent 变体</strong>（去掉 quantization，留 KL + perceptual + adversarial），output 是 continuous latent map（4 通道，下采样 8×）。diffusion 在这个 latent 上跑，最后 decoder 还原。可以理解为 "VQ-GAN encoder/decoder + continuous latent + KL"。</p></div>
 <h3 id="74-patchgan-discriminator生产架构">7.4　PatchGAN Discriminator（生产架构）</h3>

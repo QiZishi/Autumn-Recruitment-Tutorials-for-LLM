@@ -512,7 +512,6 @@ body.aris-blog .aris-focus-toggle { display: inline-block; }
   .aris-focus-toggle, .aris-focus-hint { display: none !important; }
   body.aris-focus-dim main > * { opacity: 1 !important; }
 }
-
 .home-link {
   display: block;
   margin: 0 0 18px;
@@ -778,7 +777,7 @@ def react_loop(llm, question, max_steps=8):
 <p>Reflexion (Shinn et al. 2023 NeurIPS, arXiv:2303.11366) 把 agent 行为分成三个模块：</p>
 <ul><li><strong>Actor</strong> $M_a$：生成 action（一个 ReAct 或 CoT agent）；</li><li><strong>Evaluator</strong> $M_e$：给 trajectory 打分（rule-based / heuristic / 另一个 LLM）；</li><li><strong>Self-Reflection</strong> $M_{sr}$：在 fail 后写一段<strong>自然语言反思</strong>，存入 episodic memory $\text{mem}$。</li></ul>
 <p>下一个 episode 时把 $\text{mem}$ 拼回 prompt。形式上像 policy iteration：</p>
-<p>$$\tau_t \sim M_a(\cdot \mid q,\, \text{mem}_{<t}),\quad r_t = M_e(\tau_t),\quad \text{refl}_t = M_{sr}(\tau_t, r_t),\quad \text{mem}_t = \text{mem}_{<t} \cup \{\text{refl}_t\}.$$</p>
+<p>$$\tau_t \sim M_a(\cdot \mid q,\, \text{mem}_{\lt t}),\quad r_t = M_e(\tau_t),\quad \text{refl}_t = M_{sr}(\tau_t, r_t),\quad \text{mem}_t = \text{mem}_{\lt t} \cup \{\text{refl}_t\}.$$</p>
 <p>关键：<strong>$\theta$ 不变</strong>——只动 prompt 里的 reflection 文本。</p>
 <h3 id="42-为什么语言-reflection能-work">4.2　为什么"语言 reflection"能 work？</h3>
 <p>把 reflection 当成 <strong>semantic gradient</strong>：</p>

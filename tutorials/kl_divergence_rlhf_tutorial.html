@@ -512,7 +512,6 @@ body.aris-blog .aris-focus-toggle { display: inline-block; }
   .aris-focus-toggle, .aris-focus-hint { display: none !important; }
   body.aris-focus-dim main > * { opacity: 1 !important; }
 }
-
 .home-link {
   display: block;
   margin: 0 0 18px;
@@ -664,7 +663,7 @@ body.aris-blog .aris-focus-toggle { display: inline-block; }
 <div class="callout callout-good"><div class="callout-title">链式法则在 RLHF 里 = per-token KL 加总</div><p>Sequence-level KL 是 trajectory log-ratio 之和的<strong>期望</strong>：$\text{KL}_\text{seq} = \mathbb{E}_{y\sim\pi_\theta}[\sum_t \log\pi_\theta(y_t|s_t)/\pi_\text{ref}(y_t|s_t)]$。实际实现里对每条 rollout 做 $\sum_t \log r_t$ 是<strong>单条 MC estimator</strong>（k1 的 sequence 形式）；要得到 true expected KL 需对 batch 内 rollout 平均。<strong>真实的 token-level KL</strong> $D_\text{KL}(\pi_\theta(\cdot|s_t)\|\pi_\text{ref}(\cdot|s_t))$ 还需对该 prefix 上整个 vocab 求和（full-vocab KL），而非只在 sampled token 上算 log-ratio。这两者<strong>期望相等</strong>但 estimator 形式不同：sum-over-rollout 的 sampled log-ratio 是 cheap-but-noisy estimator。</p></div>
 <h3 id="12-forward-kl-vs-reverse-klmass-covering-还是-mode-seeking">1.2　Forward KL vs Reverse KL：mass-covering 还是 mode-seeking？</h3>
 <p>记 $p$ 是数据/真实分布，$q_\theta$ 是参数化模型。两种 KL 在拟合策略上行为完全不同：</p>
-<table><thead><tr><th>方向</th><th>形式（见下方 display）</th><th>期望对谁取</th><th>行为</th><th>经典用途</th></tr></thead><tbody><tr><td><strong>Forward KL</strong></td><td>$\text{KL}(p\,\</td><td>\,q_\theta) = \mathbb{E}<em>{p}[\log(p/q</em>\theta)]$</td><td>$p$（数据/目标）</td><td><strong>mass-covering / mean-seeking</strong>：哪里 $p > 0$，$q_\theta$ 必须 &gt; 0，否则 $\log(p/q) \to \infty$</td><td>MLE / 蒸馏（学生覆盖老师）</td></tr><tr><td><strong>Reverse KL</strong></td><td>$\text{KL}(q_\theta\,\</td><td>\,p) = \mathbb{E}<em>{q</em>\theta}[\log(q_\theta/p)]$</td><td>$q_\theta$（变分/优化分布）</td><td><strong>mode-seeking / minorization</strong>：哪里 $q_\theta > 0$，$p$ 必须 &gt; 0；$q_\theta$ 倾向找单一 mode 缩进去</td><td>VI、RLHF、GAN-like 训练</td></tr></tbody></table>
+<table><thead><tr><th>方向</th><th>形式（见下方 display）</th><th>期望对谁取</th><th>行为</th><th>经典用途</th></tr></thead><tbody><tr><td><strong>Forward KL</strong></td><td>$\text{KL}(p\,\Vert\,q_\theta) = \mathbb{E}_{p}[\log(p/q_\theta)]$</td><td>$p$（数据/目标）</td><td><strong>mass-covering / mean-seeking</strong>：哪里 $p > 0$，$q_\theta$ 必须 &gt; 0，否则 $\log(p/q) \to \infty$</td><td>MLE / 蒸馏（学生覆盖老师）</td></tr><tr><td><strong>Reverse KL</strong></td><td>$\text{KL}(q_\theta\,\Vert\,p) = \mathbb{E}_{q_\theta}[\log(q_\theta/p)]$</td><td>$q_\theta$（变分/优化分布）</td><td><strong>mode-seeking / minorization</strong>：哪里 $q_\theta > 0$，$p$ 必须 &gt; 0；$q_\theta$ 倾向找单一 mode 缩进去</td><td>VI、RLHF、GAN-like 训练</td></tr></tbody></table>
 <p>记号约定：</p>
 <p>$$\text{Forward KL}: \text{KL}(p \,\|\, q_\theta) = \mathbb{E}_{p}\!\left[\log\frac{p}{q_\theta}\right],\qquad \text{Reverse KL}: \text{KL}(q_\theta \,\|\, p) = \mathbb{E}_{q_\theta}\!\left[\log\frac{q_\theta}{p}\right]$$</p>
 <p>经典图（双峰 $p$，单峰 $q_\theta$）：</p>
@@ -785,7 +784,7 @@ def compare_kl_estimators(n_samples=10_000, seed=0):
 <h2 id="3-kl-在-rlhf-中的两种放置">§3 KL 在 RLHF 中的两种放置</h2>
 <h3 id="31-option-ain-reward-shapingppo-rlhf--instructgpt-标准做法">3.1　Option A：In-reward shaping（PPO RLHF / InstructGPT 标准做法）</h3>
 <p>把 KL <strong>塞进 per-token reward</strong>，再正常跑 PPO + GAE：</p>
-<p>$$\boxed{\;\tilde{r}_t = \underbrace{\mathbb{1}[t = T] \cdot R(x, y)}_{\text{terminal RM reward}} - \beta \cdot \underbrace{\log\frac{\pi_\theta(y_t \mid x, y_{<t})}{\pi_\text{ref}(y_t \mid x, y_{<t})}}_{\text{per-token KL (k1)}}\;}$$</p>
+<p>$$\boxed{\;\tilde{r}_t = \underbrace{\mathbb{1}[t = T] \cdot R(x, y)}_{\text{terminal RM reward}} - \beta \cdot \underbrace{\log\frac{\pi_\theta(y_t \mid x, y_{\lt t})}{\pi_\text{ref}(y_t \mid x, y_{\lt t})}}_{\text{per-token KL (k1)}}\;}$$</p>
 <p>注意细节：</p>
 <ul><li><strong>per-token</strong>：每生成一个 token，就计算这个 token 的 log-prob ratio，作为该步 reward 的一部分。</li><li><strong>k1 estimator</strong>：这里直接用 $\log(\pi_\theta/\pi_\text{ref})$（k1）。注意它<strong>单 token 可为负</strong>，但作为 reward shaping 只要均值/总和符合 KL 期望即可。</li><li><strong>terminal RM reward</strong>：RM 给整段答案的 scalar，只放在最后一个 token 上（其余 token RM reward = 0）。</li></ul>
 <p>放完后跑 GAE：</p>
@@ -868,7 +867,7 @@ for epoch in range(num_epochs):
 <h2 id="5-kl-与-dpo--grpo--simpo--kto--ipo-的关系">§5 KL 与 DPO / GRPO / SimPO / KTO / IPO 的关系</h2>
 <h3 id="51-dpoimplicit-reward----sequence-log-density-ratio">5.1　DPO：implicit reward = β × sequence log-density ratio</h3>
 <p>DPO 的 implicit reward 是 $\hat{r}_\theta(x, y) = \beta \log(\pi_\theta(y|x) / \pi_\text{ref}(y|x))$，即整段 $y$ 的 sequence-level log-density ratio：</p>
-<p>$$\hat{r}_\theta(x, y) = \beta \sum_t \log\frac{\pi_\theta(y_t | x, y_{<t})}{\pi_\text{ref}(y_t | x, y_{<t})}$$</p>
+<p>$$\hat{r}_\theta(x, y) = \beta \sum_t \log\frac{\pi_\theta(y_t | x, y_{\lt t})}{\pi_\text{ref}(y_t | x, y_{\lt t})}$$</p>
 <div class="callout callout-warn"><div class="callout-title">注意区分：implicit reward 不是 KL 本身</div><p>$\hat{r}_\theta$ 是<strong>单条 sequence 的 pointwise log-ratio</strong>，<strong>不是</strong> KL。只有当对 $y\sim\pi_\theta$ 取期望时，$\mathbb{E}_{y\sim\pi_\theta}[\hat{r}_\theta(x,y)] = \beta\cdot\text{KL}(\pi_\theta(\cdot|x)\,\|\,\pi_\text{ref}(\cdot|x))$（这是 k1 KL estimator 的 sequence-level 形式）。但 <strong>DPO 训练时 $y_w, y_l$ 不是从 $\pi_\theta$ 采的，而是来自固定 preference 数据</strong>，所以训练阶段的 $\hat{r}_\theta$ 不能直接读作 KL；它只是 pairwise log-ratio 差异。</p>
 <p><strong>正确表述</strong>：DPO loss 的对偶 RLHF 解释是把 $\hat{r}_\theta$ 当 reward，BT model 给概率 $\sigma(\hat{r}_w - \hat{r}_l)$；它对应"KL-regularized RL 闭式最优 policy $\pi^* \propto \pi_\text{ref}\exp(r/\beta)$"反解出的 reward 表达式。$\pi_\theta$ 在 implicit RLHF 视角下隐式被 KL 约束（因为 $\hat r_\theta$ 形式里 $\pi_\theta/\pi_\text{ref}$ 出现），但 DPO 优化的是 pairwise margin 而非显式 KL margin。</p></div>
 <h4 id="511-dpo-闭式推导回顾">5.1.1　DPO 闭式推导回顾</h4>
@@ -961,7 +960,7 @@ for epoch in range(num_epochs):
 <p>在 RLHF 里 $\chi^2$ 偶尔被作为 KL 的"敏感"上界使用：<strong>当 $\chi^2$ 大但 KL 小，意味着 $\pi_\theta$ 有重 tail 偏离 $\pi_\text{ref}$</strong>（高方差但低 mean）。某些工作（Yu et al. 2024 / others）在监控 reward hacking 时同时画 KL 和 $\chi^2$，看 tail 行为。</p>
 <h3 id="66-sequence-level-vs-token-level-kl">6.6　Sequence-level vs Token-level KL</h3>
 <p>由 §1.1 的<strong>链式法则</strong>：</p>
-<p>$$\text{KL}(\pi_\theta(\cdot|x) \| \pi_\text{ref}(\cdot|x)) = \mathbb{E}_{y \sim \pi_\theta}\!\left[\sum_t \log\frac{\pi_\theta(y_t | x, y_{<t})}{\pi_\text{ref}(y_t | x, y_{<t})}\right]$$</p>
+<p>$$\text{KL}(\pi_\theta(\cdot|x) \| \pi_\text{ref}(\cdot|x)) = \mathbb{E}_{y \sim \pi_\theta}\!\left[\sum_t \log\frac{\pi_\theta(y_t | x, y_{\lt t})}{\pi_\text{ref}(y_t | x, y_{\lt t})}\right]$$</p>
 <p>即 <strong>sequence-level KL = token-level KL 之和的期望</strong>（自回归 chain rule）。注意：单条 rollout 上把 $\sum_t \log\pi_\theta(y_t)/\pi_\text{ref}(y_t)$ 直接当 KL 是 <strong>k1 estimator</strong>（unbiased 但 per-rollout 方差大）；若要 true token-level KL $D(\pi_\theta(\cdot|s_t)\|\pi_\text{ref}(\cdot|s_t))$ 还需 full-vocab forward。<strong>两者期望相等</strong>，工程上选 sampled log-ratio 是因为 vocab 求和昂贵。</p>
 <p>但有两个<strong>implementation trick</strong> 与 token-level 相关：</p>
 <ol><li><strong>Per-token clipping</strong>：单 token KL 偶尔很大（罕见 token、长 tail），可以对每 token KL 做 clip 防止单 token 拖飞 batch 总 KL。</li><li><strong>Mask on assistant tokens only</strong>：在 chat / agent setting 下，prompt token 不应该参与 KL 计算（prompt 是同一的，policy 和 ref 在 prompt 上完全一致，KL = 0；但浮点误差会污染）。所以 KL mask 与 PPO action_mask 重合，<strong>只在 assistant generation token 上算 KL</strong>。</li></ol>
@@ -1327,7 +1326,7 @@ def ppo_reward_with_kl(rewards_terminal, rollout_logp_theta, logp_ref,
 <details>
 
 <summary>Q20.Per-token KL 和 sequence-level KL 是什么关系？</summary>
-<ul><li>由 KL 的<strong>链式法则</strong>（条件分解）： $\text{KL}(\pi_\theta(\cdot|x) \| \pi_\text{ref}(\cdot|x)) = \mathbb{E}_{y\sim\pi_\theta}[\sum_t \log(\pi_\theta(y_t|x,y_{<t})/\pi_\text{ref}(y_t|x,y_{<t}))]$</li><li>即 <strong>sequence-level KL = token-level KL 之和的期望</strong></li><li>工程上只能 token-level 算（vocab 维度求和 OK，sequence 维度组合爆炸）</li><li>实际写 RLHF loss：per-token KL → mask assistant tokens → sum → average per sequence</li><li>注意：prompt token 上 policy 和 ref 输入相同，KL 应 = 0，但 floating-point 噪声会污染 → 必须 mask</li></ul>
+<ul><li>由 KL 的<strong>链式法则</strong>（条件分解）： $\text{KL}(\pi_\theta(\cdot|x) \| \pi_\text{ref}(\cdot|x)) = \mathbb{E}_{y\sim\pi_\theta}[\sum_t \log(\pi_\theta(y_t|x,y_{\lt t})/\pi_\text{ref}(y_t|x,y_{\lt t}))]$</li><li>即 <strong>sequence-level KL = token-level KL 之和的期望</strong></li><li>工程上只能 token-level 算（vocab 维度求和 OK，sequence 维度组合爆炸）</li><li>实际写 RLHF loss：per-token KL → mask assistant tokens → sum → average per sequence</li><li>注意：prompt token 上 policy 和 ref 输入相同，KL 应 = 0，但 floating-point 噪声会污染 → 必须 mask</li></ul>
 <p>混淆两者；或不知道 mask only assistant tokens 的必要性。</p>
 </details>
 <h3 id="l3-顶级-lab-题5-题">L3 顶级 lab 题（5 题）</h3>
