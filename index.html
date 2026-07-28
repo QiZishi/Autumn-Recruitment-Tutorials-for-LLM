@@ -380,7 +380,7 @@ section h2 .num {
   <p class="subtitle">本网站所有文档均源于 ARIS-in-AI-Offer 与 Hello-Agents 两个开源仓库中的开源文档</p>
   <p class="tagline">感谢这两个开源仓库对社区和本网页做出的贡献，也预祝大家秋招顺利！下面按主题整理为教程卡片，点击即可跳转到对应 HTML。</p>
   <div class="stats">
-    <span>26 篇中文教程</span>
+    <span>34 篇中文教程</span>
     <span>8 个主题卡片</span>
     <span>2 个来源仓库</span>
   </div>
@@ -405,12 +405,15 @@ section h2 .num {
       <div class="vol-line">
         <span class="vol-id">CARD · 01</span>
         <span class="vol-title">🧠 General / 基础</span>
-        <span class="vol-status">2 篇</span>
+        <span class="vol-status">5 篇</span>
       </div>
-      <p class="vol-scope">梳理 Transformer 与 RLHF 的基础概念，是进入后续大模型面试题的起点。</p>
+      <p class="vol-scope">梳理 Transformer、归一化、优化器与 RLHF 的基础概念，是进入后续大模型面试题的起点。</p>
       <div class="card-links">
         <a class="mini-link" href="tutorials/attention_tutorial.html"><strong>Attention 面试 Cheat Sheet</strong><small>注意力机制、QKV、位置编码与基础推导。</small></a>
         <a class="mini-link" href="tutorials/kl_divergence_rlhf_tutorial.html"><strong>KL Divergence in RLHF</strong><small>从 KL 散度出发解释对齐约束与训练稳定性。</small></a>
+        <a class="mini-link" href="tutorials/transformer_block_tutorial.html"><strong>Transformer Block</strong><small>残差拓扑、归一化、注意力、FFN 与 MoE 的模块化结构。</small></a>
+        <a class="mini-link" href="tutorials/normalization_init_tutorial.html"><strong>归一化 / 残差 / 初始化</strong><small>LayerNorm、RMSNorm、残差连接与初始化稳定性。</small></a>
+        <a class="mini-link" href="tutorials/optimizer_lr_schedule_tutorial.html"><strong>优化器 / LR Schedule</strong><small>AdamW、Muon、学习率调度与训练稳定性。</small></a>
       </div>
     </article>
 
@@ -418,7 +421,7 @@ section h2 .num {
       <div class="vol-line">
         <span class="vol-id">CARD · 02</span>
         <span class="vol-title">🎯 Post-Training &amp; Reasoning</span>
-        <span class="vol-status">4 篇</span>
+        <span class="vol-status">5 篇</span>
       </div>
       <p class="vol-scope">覆盖对齐优化、推理模型与 on-policy distillation，是面试中最常追问的训练后阶段。</p>
       <div class="card-links">
@@ -426,6 +429,7 @@ section h2 .num {
         <a class="mini-link" href="tutorials/reasoning_models_tutorial.html"><strong>Reasoning Models</strong><small>推理型大模型的训练范式与能力边界。</small></a>
         <a class="mini-link" href="tutorials/llm_opd_tutorial.html"><strong>LLM On-Policy Distillation</strong><small>在线蒸馏、数据收集与策略对齐。</small></a>
         <a class="mini-link" href="tutorials/lora_peft_tutorial.html"><strong>LoRA / PEFT</strong><small>LoRA、QLoRA、DoRA、rsLoRA、PiSSA、AdaLoRA 与参数高效微调。</small></a>
+        <a class="mini-link" href="tutorials/llm_evaluation_benchmarking_tutorial.html"><strong>LLM Evaluation &amp; Benchmarking</strong><small>评测指标、benchmark 设计、污染检测与统计推断。</small></a>
       </div>
     </article>
 
@@ -433,7 +437,7 @@ section h2 .num {
       <div class="vol-line">
         <span class="vol-id">CARD · 03</span>
         <span class="vol-title">🏛️ LLM Architecture &amp; Systems</span>
-        <span class="vol-status">5 篇</span>
+        <span class="vol-status">8 篇</span>
       </div>
       <p class="vol-scope">面向系统岗的核心版块，涵盖模型结构、长上下文、缓存、量化与分布式训练。</p>
       <div class="card-links">
@@ -442,6 +446,9 @@ section h2 .num {
         <a class="mini-link" href="tutorials/kv_cache_speculative_decoding_tutorial.html"><strong>KV Cache + Speculative Decoding</strong><small>推理加速、缓存设计与采样协同。</small></a>
         <a class="mini-link" href="tutorials/quantization_tutorial.html"><strong>Quantization</strong><small>GPTQ、AWQ、FP8 与低精度推理。</small></a>
         <a class="mini-link" href="tutorials/distributed_training_tutorial.html"><strong>Distributed Training</strong><small>FSDP、ZeRO、并行策略与训练伸缩。</small></a>
+        <a class="mini-link" href="tutorials/linear_sparse_attention_tutorial.html"><strong>线性 / 稀疏注意力</strong><small>线性注意力、SSM、Mamba、稀疏模式与混合架构。</small></a>
+        <a class="mini-link" href="tutorials/llm_pretraining_pipeline_tutorial.html"><strong>LLM Pretraining Pipeline</strong><small>Scaling law、数据流水线、packing、loss masking 与 checkpoint。</small></a>
+        <a class="mini-link" href="tutorials/llm_inference_serving_tutorial.html"><strong>LLM Inference &amp; Serving Stack</strong><small>PagedAttention、continuous batching 与服务系统设计。</small></a>
       </div>
     </article>
 
@@ -494,13 +501,14 @@ section h2 .num {
       <div class="vol-line">
         <span class="vol-id">CARD · 07</span>
         <span class="vol-title">🌊 Generative Models — Theory &amp; Tokenizers</span>
-        <span class="vol-status">3 篇</span>
+        <span class="vol-status">4 篇</span>
       </div>
       <p class="vol-scope">聚焦生成式建模的基础理论和离散/连续表示学习。</p>
       <div class="card-links">
         <a class="mini-link" href="tutorials/flow_matching_tutorial.html"><strong>Flow Matching</strong><small>从流匹配视角理解生成路径。</small></a>
         <a class="mini-link" href="tutorials/diffusion_foundations_tutorial.html"><strong>Diffusion Foundations</strong><small>扩散模型的核心原理与训练目标。</small></a>
         <a class="mini-link" href="tutorials/vae_vqvae_vqgan_tutorial.html"><strong>VAE / VQ-VAE / VQ-GAN</strong><small>连续与离散潜空间的表示学习。</small></a>
+        <a class="mini-link" href="tutorials/tokenization_tutorial.html"><strong>Tokenization / 分词器</strong><small>BPE、Unigram、byte fallback 与 tokenizer 工程陷阱。</small></a>
       </div>
     </article>
 
